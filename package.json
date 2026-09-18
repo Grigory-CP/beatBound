@@ -1,0 +1,14 @@
+{
+  "name": "team-ega",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write \"./**/*.{js,jsx,ts,tsx,css,md,json}\" --config ./.prettierrc"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "prettier": "^3.9.8"
+  }
+}
