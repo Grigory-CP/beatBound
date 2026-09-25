@@ -64,11 +64,11 @@ USER STORIES FOLLOW THE FORMAT: "AS A [TYPE OF USER], I WANT TO [ACTION] SO THAT
 •	US-01: AUTHENTICATION
 •	US-02: STORE WORKOUT_LOG.
 •	US-03: SEARCH HISTORY 
-ID	REQUIREMENT	PRIORITY
-US-01	As a user, I want to authenticate via username and password.	2
-US-02	As a user, I want to store workout information	1
-US-03	As a user, I want to search workout history	3
-US-04	As a user, I want to add new workout types.	4
+
+ID	Requirement	Priority	Author
+US-01	As a student, I want to sing into my microphone and get real-time feedback on my pitch accuracy so that I know whether I'm hitting the right notes during a battle.	1	Amogh Arora
+US-02	As a student, I want to battle monsters by completing rhythm and note-reading challenges so that practicing music feels like playing a game instead of a chore.	1	Amogh Arora
+US-03	As a student, I want my character to level up and unlock new songs/challenges as I improve so that I stay motivated to keep practicing.	2	Amogh Arora
 
 3.	FUNCTIONAL REQUIREMENTS
 THE SYSTEM SHALL...
