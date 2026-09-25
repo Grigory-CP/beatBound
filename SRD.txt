@@ -20,7 +20,7 @@ PROJECT ASSETS:
 DOCUMENT HISTORY:
 LAST DATE CHANGED: 	WHO:	WHAT WAS CHANGED:
 9/25/2026	Amogh Arora	Initial draft: product vision, Amogh's user stories, and related functional/non-functional requirements (TE2)
- 
+9/25/2026 Edgar Olozagaste-Olea Added 3 user stories along with corresponding functional requirements for TE2.
  
  
  
