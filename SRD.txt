@@ -1,32 +1,32 @@
 STUDENT PROJECT TEMPLATE (SRS)
 (INSTRUCTION FOR STUDENTS: THIS DOCUMENT SERVES AS THE FORMAL 'CONTRACT' FOR YOUR TEAM PROJECT. IT MUST BE MAINTAINED IN YOUR GITHUB REPOSITORY.)
-
-[INSERT PROJECT NAME HERE]
-
+ 
+beatBound
+ 
 SOFTWARE REQUIREMENTS SPECIFICATION
 INSTRUCTOR: LARA NICHOLS-BROWN
 TERM: [E.G., SPRING 2026]
-SECTION: [SECTION NUMBER]
-
+SECTION: 3
+ 
 THE ENGINEERING TEAM:
-1.	STUDENT A: [NAME] — [ROLE, E.G., APP ARCHITECT]
-2.	STUDENT B: [NAME] — [ROLE, E.G., API DEVELOPER]
-3.	STUDENT C: [NAME] — [ROLE, E.G., SCRUM MASTER]
-
+1.	STUDENT A: Amogh Arora — Lead Engineer
+2.	STUDENT B: Grigory Polunin — Scrum Master
+3.	STUDENT C: Edgar Olozagaste-Olea — Product Owner
+ 
 PROJECT ASSETS:
 •	GITHUB: [LINK]
 •	DEPLOYMENT: [LINK TO LIVE SITE]
-
-DOCUMENT HISTORY: 	
+ 
+DOCUMENT HISTORY:
 LAST DATE CHANGED: 	WHO:	WHAT WAS CHANGED:
-		
-		
-		
-		
-
-________________________________________ 
-
-[PROJECT TITLE]
+9/25/2026	Amogh Arora	Initial draft: product vision, Amogh's user stories, and related functional/non-functional requirements (TE2)
+ 
+ 
+ 
+ 
+________________________________________
+ 
+beatBound
 SOFTWARE REQUIREMENTS SPECIFICATION (SRS)
 COURSE: [COURSE NAME/NUMBER]
 DATE: [SUBMISSION DATE]
@@ -53,58 +53,69 @@ O	7.1 LIST OF PERSISTENT DATA
 8.	TRACEABILITY MATRIX ................................................................. [PAGE #]
 9.	APPENDICES ....................................................................................... [PAGE #]
 ________________________________________
-
- 
+ 
+ 
 1.	INTRODUCTION
-•	PROBLEM STATEMENT: WHAT SPECIFIC PROBLEM ARE YOU SOLVING?
-•	TARGET AUDIENCE: WHO ARE THE STAKEHOLDERS?
-•	SCOPE: WHAT IS THE SCOPE OF THIS PROJECT?
+•	PROBLEM STATEMENT: Music practice built around repetitive drills (scales, pitch-matching, note-reading) is low-engagement for kids and young teens, and most practice apps aren't built for a teacher managing a whole class at once.
+•	TARGET AUDIENCE: Kids and young teens learning music, and the music teachers who instruct them.
+•	SCOPE: An MVP singing-and-rhythm RPG where students battle enemies via pitch-matching, rhythm, and note-reading challenges, plus a teacher-managed classroom layer (rosters, assignments, progress dashboard). Out of scope for MVP: multiplayer battles, app store deployment, monetization, full curriculum library.
+•	PRODUCT VISION: For kids and young teens who want music practice to feel like an adventure instead of a chore, beatBound is a singing-and-rhythm RPG that turns vocal pitch-matching and note-reading drills into monster-battling gameplay, with a teacher dashboard that lets instructors organize classes, assign practice quests, and track student progress. Unlike drill-based ear-training apps (e.g., Yousician, Simply Piano) or generic rhythm games (e.g., Beat Saber, Just Dance), beatBound combines RPG-style progression with classroom management tools built specifically for group music education.
+ 
+	TEMPLATE ELEMENT	CONTENT
+	Target customer	Kids and young teens, and the music teachers who instruct them
+	Need / opportunity	Music practice is repetitive and low-engagement as drills, and existing apps aren't built for classroom use
+	Product name	beatBound
+	Product category	A singing-and-rhythm RPG with a teacher-managed classroom layer
+	Key benefit	Turns individual practice into game progression, while giving teachers tools to assign, organize, and monitor a whole class
+	Primary competitive alternative	Drill-based ear-training/vocal apps (Yousician, Simply Piano) and generic rhythm games (Beat Saber, Just Dance)
+	Primary differentiation	Combines RPG progression with built-in classroom management (rosters, assignments, progress dashboards) that neither alternative offers
+ 
 2.	USER STORIES
 USER STORIES FOLLOW THE FORMAT: "AS A [TYPE OF USER], I WANT TO [ACTION] SO THAT [VALUE/BENEFIT]."...
-•	US-01: AUTHENTICATION
-•	US-02: STORE WORKOUT_LOG.
-•	US-03: SEARCH HISTORY 
-
+•	US-01: REAL-TIME PITCH FEEDBACK
+•	US-02: RHYTHM/NOTE-READING BATTLES
+•	US-03: CHARACTER PROGRESSION
+ 
 ID	Requirement	Priority	Author
 US-01	As a student, I want to sing into my microphone and get real-time feedback on my pitch accuracy so that I know whether I'm hitting the right notes during a battle.	1	Amogh Arora
 US-02	As a student, I want to battle monsters by completing rhythm and note-reading challenges so that practicing music feels like playing a game instead of a chore.	1	Amogh Arora
 US-03	As a student, I want my character to level up and unlock new songs/challenges as I improve so that I stay motivated to keep practicing.	2	Amogh Arora
-
+ 
+(Grigory and Edgar to add their own three stories directly to this table.)
+ 
 3.	FUNCTIONAL REQUIREMENTS
 THE SYSTEM SHALL...
 ID	REQUIREMENT	PRIORITY
-FR-01	The system will authenticate users via username and password.	2
-FR-02	Allow users to store workout information	1
-US-03	Allow users to search their workout history	3
-US-04	Allow users to add new workout types.	4
-
+FR-01	Analyze microphone audio input and provide real-time pitch-accuracy feedback during gameplay.	1
+FR-02	Present rhythm and note-reading challenges as "battles" against in-game enemies.	1
+FR-03	Track player level/progression and unlock new songs and challenges based on performance.	2
+ 
+(Grigory's and Edgar's functional requirements go here once their user stories are added.)
+ 
 4. NON-FUNCTIONAL REQUIREMENTS
-•	INTEGRITY: HANDLING ERRORS AND BAD DATA
-•	SECURITY: IMPLEMENT BCRYPT FOR PASSWORD HASHING AND ENVIRONMENT VARIABLES FOR DB CREDENTIALS.
-•	USABILITY: 
+•	INTEGRITY: All audio and gameplay data submissions must be validated to handle malformed or unexpected input without crashing gameplay.
+•	SECURITY: IMPLEMENT BCRYPT FOR PASSWORD HASHING AND ENVIRONMENT VARIABLES FOR DB CREDENTIALS. Because primary users are minors, the system should collect minimal personal data (a display name and teacher-issued class code only — no email or personal contact info required for student accounts).
+•	USABILITY: Pitch-detection feedback should feel real-time (well under 200ms latency). The student-facing UI must be usable by the target age group, with minimal text, clear icons, and simple navigation; the teacher dashboard should let a teacher assign work or check progress in a few clicks.
 5. SYSTEM ARCHITECTURE
 •	REST ENDPOINTS: (LIST METHOD | URL | DESCRIPTION)
 •	LIST YOUR PLANNED ENDPOINTS BASED ON YOUR REST SLIDE:
 O	GET /API/RESOURCES — FETCHES COLLECTION.
 O	POST /API/RESOURCES — CREATES A NEW RESOURCE.
-•	UML: (ATTACH A DIAGRAM) 
-
-
-5.	USER INTERFACE (UI) 
+•	UML: (ATTACH A DIAGRAM)
+ 
+ 
+5.	USER INTERFACE (UI)
 A.	5.1 WIREFRAMES / MOCKUPS
 6.	DATA REQUIREMENTS
-
-7.	TRACEABILITY MATRIX 
-
+ 
+7.	TRACEABILITY MATRIX
+ 
 ID	REQUIREMENT	LINE OF CODE
 US-01	The system will authenticate users via username and password.	152
 US-02	Allow users to store workout information	256
 US-03	Allow users to search their workout history	46
 US-04	Allow users to add new workout types.	45
-
+ 
 8.	AI USAGE & DISCLOSURE (MANDATORY)
 •	MODEL(S) USED: [E.G., CLAUDE 3.5, GPT-4O]
-•	PROMPTS USED DURING CODING: 
-
-
-
+•	PROMPTS USED DURING CODING:
