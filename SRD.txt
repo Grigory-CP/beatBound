@@ -5,7 +5,7 @@ beatBound
  
 SOFTWARE REQUIREMENTS SPECIFICATION
 INSTRUCTOR: LARA NICHOLS-BROWN
-TERM: [E.G., SPRING 2026]
+TERM: FALL 2026
 SECTION: 3
  
 THE ENGINEERING TEAM:
@@ -14,7 +14,7 @@ THE ENGINEERING TEAM:
 3.	STUDENT C: Edgar Olozagaste-Olea — Product Owner
  
 PROJECT ASSETS:
-•	GITHUB: [LINK]
+•	GITHUB: https://github.com/Grigory-CP/beatBound
 •	DEPLOYMENT: [LINK TO LIVE SITE]
  
 DOCUMENT HISTORY:
@@ -61,14 +61,14 @@ ________________________________________
 •	SCOPE: An MVP singing-and-rhythm RPG where students battle enemies via pitch-matching, rhythm, and note-reading challenges, plus a teacher-managed classroom layer (rosters, assignments, progress dashboard). Out of scope for MVP: multiplayer battles, app store deployment, monetization, full curriculum library.
 •	PRODUCT VISION: For kids and young teens who want music practice to feel like an adventure instead of a chore, beatBound is a singing-and-rhythm RPG that turns vocal pitch-matching and note-reading drills into monster-battling gameplay, with a teacher dashboard that lets instructors organize classes, assign practice quests, and track student progress. Unlike drill-based ear-training apps (e.g., Yousician, Simply Piano) or generic rhythm games (e.g., Beat Saber, Just Dance), beatBound combines RPG-style progression with classroom management tools built specifically for group music education.
  
-	TEMPLATE ELEMENT	CONTENT
-	Target customer	Kids and young teens, and the music teachers who instruct them
-	Need / opportunity	Music practice is repetitive and low-engagement as drills, and existing apps aren't built for classroom use
-	Product name	beatBound
-	Product category	A singing-and-rhythm RPG with a teacher-managed classroom layer
-	Key benefit	Turns individual practice into game progression, while giving teachers tools to assign, organize, and monitor a whole class
-	Primary competitive alternative	Drill-based ear-training/vocal apps (Yousician, Simply Piano) and generic rhythm games (Beat Saber, Just Dance)
-	Primary differentiation	Combines RPG progression with built-in classroom management (rosters, assignments, progress dashboards) that neither alternative offers
+TEMPLATE ELEMENT	CONTENT
+Target customer	Kids and young teens, and the music teachers who instruct them
+Need / opportunity	Music practice is repetitive and low-engagement as drills, and existing apps aren't built for classroom use
+Product name	beatBound
+Product category	A singing-and-rhythm RPG with a teacher-managed classroom layer
+Key benefit	Turns individual practice into game progression, while giving teachers tools to assign, organize, and monitor a whole class
+Primary competitive alternative	Drill-based ear-training/vocal apps (Yousician, Simply Piano) and generic rhythm games (Beat Saber, Just Dance)
+Primary differentiation	Combines RPG progression with built-in classroom management (rosters, assignments, progress dashboards) that neither alternative offers
  
 2.	USER STORIES
 USER STORIES FOLLOW THE FORMAT: "AS A [TYPE OF USER], I WANT TO [ACTION] SO THAT [VALUE/BENEFIT]."...
@@ -80,8 +80,15 @@ ID	Requirement	Priority	Author
 US-01	As a student, I want to sing into my microphone and get real-time feedback on my pitch accuracy so that I know whether I'm hitting the right notes during a battle.	1	Amogh Arora
 US-02	As a student, I want to battle monsters by completing rhythm and note-reading challenges so that practicing music feels like playing a game instead of a chore.	1	Amogh Arora
 US-03	As a student, I want my character to level up and unlock new songs/challenges as I improve so that I stay motivated to keep practicing.	2	Amogh Arora
+US-04	As a teacher, I want to be able to provide my students with unique class codes to join my classroom so that I may be able to monitor their progress. 	1 	Edgar Olozagaste-Olea
+US-05 	As a student, I want to be able to pause and resume my challenges so that I do not lose progress if I am interrupted. 2	Edgar Olozagaste-Olea
+US-06 	As a teacher, I want to be able to create unique challenges based on what my students struggle with the most.	3	Edgar Olozagaste-Olea
+
+
+
+
  
-(Grigory and Edgar to add their own three stories directly to this table.)
+(Grigory to add his own three stories directly to this table.)
  
 3.	FUNCTIONAL REQUIREMENTS
 THE SYSTEM SHALL...
@@ -89,8 +96,13 @@ ID	REQUIREMENT	PRIORITY
 FR-01	Analyze microphone audio input and provide real-time pitch-accuracy feedback during gameplay.	1
 FR-02	Present rhythm and note-reading challenges as "battles" against in-game enemies.	1
 FR-03	Track player level/progression and unlock new songs and challenges based on performance.	2
+FR-04.1	Teacher and student specific sign-up roles.		1
+FR-04.2 A classroom providing teachers with oversight of their students.	1
+FR-05.1	Pause and resume functionality inside each match.	2
+FR-05.2 Stored progress for each specific level.	2
+FR-6	Challenge publishing page where teachers can create or choose to push to their students.	3
  
-(Grigory's and Edgar's functional requirements go here once their user stories are added.)
+(Grigory's functional requirements go here once his user stories are added.)
  
 4. NON-FUNCTIONAL REQUIREMENTS
 •	INTEGRITY: All audio and gameplay data submissions must be validated to handle malformed or unexpected input without crashing gameplay.
