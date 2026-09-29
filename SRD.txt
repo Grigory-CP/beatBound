@@ -96,11 +96,11 @@ ID	REQUIREMENT	PRIORITY
 FR-01	Analyze microphone audio input and provide real-time pitch-accuracy feedback during gameplay.	1
 FR-02	Present rhythm and note-reading challenges as "battles" against in-game enemies.	1
 FR-03	Track player level/progression and unlock new songs and challenges based on performance.	2
-FR-04.1	Teacher and student specific sign-up roles.		1
-FR-04.2 A classroom providing teachers with oversight of their students.	1
-FR-05.1	Pause and resume functionality inside each match.	2
-FR-05.2 Stored progress for each specific level.	2
-FR-6	Challenge publishing page where teachers can create or choose to push to their students.	3
+FR-04	Teacher and student specific sign-up roles.		1
+FR-05 A classroom providing teachers with oversight of their students.	1
+FR-06	Pause and resume functionality inside each match.	2
+FR-07 Stored progress for each specific level.	2
+FR-08	Challenge publishing page where teachers can create or choose to push to their students.	3
  
 (Grigory's functional requirements go here once his user stories are added.)
  
