@@ -30,6 +30,7 @@
 | 9/25/2026 | Grigory Polunin | Added 3 user stories along of functional requirements for TE2. |
 | 10/1/2026 | Edgar Olozagaste-Olea | Added Section 5.3, Technology Stack: Music Functionality (Pitchy, Web Audio API, Tone.js, VexFlow). |
 | 10/1/2026 | Edgar Olozagaste-Olea | Aligned scope, user stories, functional requirements, and NFRs with the updated UML: removed assignments, teacher-created challenges, department head, songs, and note-reading; added student reports, friends, leaderboards, parent monitoring, and game settings. Described UML diagrams in 5.3. |
+| 10/2/2026 | Amogh Arora | TE3: Added consolidated class diagram (design/umls/beatBound_class_diagram.drawio.png) combining the 5 existing UMLs and revised to meet the TE3 rubric (solid directed associations with names and multiplicities, typed attributes on every class, non-persisted classes removed). Added use case diagram (design/umls/beatBound_use_case_diagram.png). Updated Section 5.3. |
 
 ---
 
@@ -163,6 +164,14 @@ THE SYSTEM SHALL...
 
 ### 5.3 UMLs
 
+#### Class Diagram (TE3, current)
+![Class Diagram](design/umls/beatBound_class_diagram.drawio.png)
+
+Consolidated persisted data model. Edit the file in draw.io (or the VS Code Draw.io Integration extension); the image updates when saved.
+
+#### Use Case Diagram
+![Use Case Diagram](design/umls/beatBound_use_case_diagram.png)
+
 ![Class Diagram 1](https://github.com/Grigory-CP/beatBound/blob/main/design/umls/beatbound_uml_1_users_classrooms.png)
 ![Class Diagram 1](https://github.com/Grigory-CP/beatBound/blob/main/design/umls/beatbound_uml_2_reports_leaderboards.png)
 ![Class Diagram 1](https://github.com/Grigory-CP/beatBound/blob/main/design/umls/beatbound_uml_3_friends.png)
@@ -233,5 +242,6 @@ VexFlow is a library that renders standard music notation (staves, clefs, and no
 
 ## 9. AI USAGE & DISCLOSURE (MANDATORY)
 
-- **MODEL(S) USED:** [E.G., CLAUDE 3.5, GPT-4O]
+- **MODEL(S) USED:** [E.G., CLAUDE 3.5, GPT-4O] Claude
 - **PROMPTS USED DURING CODING:**
+Help with generating the actual diagram after feeding it all the details
