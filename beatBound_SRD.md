@@ -29,7 +29,7 @@
 | 9/25/2026 | Edgar Olozagaste-Olea | Added 3 user stories along with corresponding functional requirements for TE2. |
 | 9/25/2026 | Grigory Polunin | Added 3 user stories along of functional requirements for TE2. |
 | 10/1/2026 | Edgar Olozagaste-Olea | Added Section 5.3, Technology Stack: Music Functionality (Pitchy, Web Audio API, Tone.js, VexFlow). |
-| 10/1/2026 | [NAME] | Aligned scope, user stories, functional requirements, and NFRs with the updated UML: removed assignments, teacher-created challenges, department head, songs, and note-reading; added student reports, friends, leaderboards, parent monitoring, and game settings. Described UML diagrams in 5.3. |
+| 10/1/2026 | Edgar Olozagaste-Olea | Aligned scope, user stories, functional requirements, and NFRs with the updated UML: removed assignments, teacher-created challenges, department head, songs, and note-reading; added student reports, friends, leaderboards, parent monitoring, and game settings. Described UML diagrams in 5.3. |
 
 ---
 
@@ -107,10 +107,10 @@ USER STORIES FOLLOW THE FORMAT: "AS A [TYPE OF USER], I WANT TO [ACTION] SO THAT
 | US-07 | As a teacher, I want to view progress reports for my classroom and for each student so that I can monitor engagement and discuss progress with parents. | 1 | Grigory Polunin |
 | US-08 | As a teacher, I want an engaging, but distraction free platform from my students to learn, where other app usage can be restricted to maintain student focus. | 2 | Grigory Polunin |
 | US-09 | As a parent, I want my child to learn music through interactive approaches, while being able to reduce or disable and control game options, and gambling-like in game features. | 3 | Grigory Polunin |
-| US-10 | As a student, I want to send and accept friend requests from other students so that I can connect with friends and stay motivated. | 3 | [AUTHOR] |
-| US-11 | As a student, I want to see how I rank among my classmates on a classroom leaderboard so that I feel motivated to improve. | 3 | [AUTHOR] |
-| US-12 | As a student, I want my classroom to appear on a global leaderboard so that my class can compete with other classrooms. | 3 | [AUTHOR] |
-| US-13 | As a parent, I want to view my child's progress report so that I can follow their practice. | 2 | [AUTHOR] |
+| US-10 | As a student, I want to send and accept friend requests from other students so that I can connect with friends and stay motivated. | 3 | Edgar Olozagaste-Olea |
+| US-11 | As a student, I want to see how I rank among my classmates on a classroom leaderboard so that I feel motivated to improve. | 3 | Edgar Olozagaste-Olea |
+| US-12 | As a student, I want my classroom to appear on a global leaderboard so that my class can compete with other classrooms. | 3 | Edgar Olozagaste-Olea |
+| US-13 | As a parent, I want to view my child's progress report so that I can follow their practice. | 2 | Edgar Olozagaste-Olea |
 
 ---
 
@@ -163,7 +163,11 @@ THE SYSTEM SHALL...
 
 ### 5.3 UMLs
 
-[ATTACH DIAGRAM IMAGES]
+![Class Diagram 1](https://github.com/Grigory-CP/beatBound/blob/main/design/umls/beatbound_uml_1_users_classrooms.png)
+![Class Diagram 1](https://github.com/Grigory-CP/beatBound/blob/main/design/umls/beatbound_uml_2_reports_leaderboards.png)
+![Class Diagram 1](https://github.com/Grigory-CP/beatBound/blob/main/design/umls/beatbound_uml_3_friends.png)
+![Class Diagram 1](https://github.com/Grigory-CP/beatBound/blob/main/design/umls/beatbound_uml_4_progression_levels.png)
+![Class Diagram 1](https://github.com/Grigory-CP/beatBound/blob/main/design/umls/beatbound_uml_5_battle.png)
 
 Students are the only role that plays the game. Teachers and parents act as monitors.
 
