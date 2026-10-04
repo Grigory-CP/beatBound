@@ -9,6 +9,7 @@
     "packages/*"
   ],
   "devDependencies": {
-    "prettier": "^3.9.8"
+    "prettier": "^3.9.8",
+    "supabase": "^2.119.0"
   }
 }
