@@ -6,6 +6,10 @@ export default [
     files: ["**/*.js"],
     languageOptions: {
       ecmaVersion: "latest",
+      globals: {
+        process: "readonly",
+        console: "readonly"
+      },
       parserOptions: {
         sourceType: "module"
       }
