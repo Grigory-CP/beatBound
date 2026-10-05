@@ -17,4 +17,10 @@ npm run format
 
 Our two main areas of focus regarding quality are Usability & Reliability. Because our application
 is mainly geared towards kids/students, we want it to not only be easy to learn/use, but also
-reliable since we'll be dealing with and storing different user data which is showed to different users. 
+reliable since we'll be dealing with and storing different user data which is showed to different users.
+
+## Figma Design
+
+https://www.figma.com/design/AGZYMITM1T5Z3VHIHhDl25/beatBound?node-id=20-2&t=w6uSqFYeFNI140Hy-0
+
+If password protected use: act-bug-bug-sans
