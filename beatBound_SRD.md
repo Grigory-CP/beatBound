@@ -33,6 +33,9 @@
 | 10/2/2026 | Amogh Arora | TE3: Added consolidated class diagram (design/umls/beatBound_class_diagram.drawio.png) combining the 5 existing UMLs and revised to meet the TE3 rubric (solid directed associations with names and multiplicities, typed attributes on every class, non-persisted classes removed). Added use case diagram (design/umls/beatBound_use_case_diagram.png). Updated Section 5.3. |
 | 10/5/2026 | Edgar Olozagaste-Olea | Updated an image in the SRD. |
 | 10/5/2026 | Edgar Olozagaste-Olea | Added audio-demo section to SRD. |
+| 10/2/2026 | Amogh Arora | TE3: Added consolidated class diagram (design/umls/beatBound_class_diagram.drawio.png) combining the 5 draft UMLs, revised to meet the TE3 rubric (solid directed associations with names and multiplicities, typed attributes on every class, non-persisted classes removed). Added use case diagram (design/umls/beatBound_use_case_diagram.png). Updated Section 5.3. |
+| 10/3/2026 | Amogh Arora | Set up Supabase (PostgreSQL) database: schema migration from the TE3 class diagram (supabase/migrations/), seed data for challenges and enemies, backend Supabase client, and setup guide (docs/supabase-setup.md). Updated Section 5.2. |
+
 
 ---
 
@@ -160,9 +163,14 @@ THE SYSTEM SHALL...
   - GET /API/RESOURCES — FETCHES COLLECTION.
   - POST /API/RESOURCES — CREATES A NEW RESOURCE.
 
-### 5.2 DATABASE SCHEMA
+### 5.2 DATABASE SCHEMA (POSTGRESQL / SUPABASE)
 
-- 
+The database is hosted on Supabase (PostgreSQL). The full schema is version-controlled as a migration: `supabase/migrations/20261003000000_initial_schema.sql`, translated directly from the TE3 class diagram (18 tables). Setup instructions: `docs/supabase-setup.md`.
+
+- Accounts are managed by Supabase Auth, which hashes passwords with bcrypt.
+- `users` plus one of `students` / `teachers` / `parents` implements the User inheritance.
+- Many-to-many associations use join tables: `parent_students`, `character_unlocks`.
+- Row Level Security is enabled on every table; per-role policies will be added with authentication.
 
 ### 5.3 UMLs
 
