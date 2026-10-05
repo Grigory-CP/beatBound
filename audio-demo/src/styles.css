@@ -1,0 +1,36 @@
+:root {
+  --bg: #14142b;
+  --panel: #1f1f3d;
+  --panel2: #29294d;
+  --text: #e6e6f0;
+  --muted: #9a9ab8;
+  --accent: #ffd84d;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+h1,
+h2 {
+  margin: 0.4em 0;
+}
+h2 {
+  font-size: 1.05rem;
+  color: var(--accent);
+}
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel2);
+  border: 2px solid #4a4a7a;
+  padding: 9px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
