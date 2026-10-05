@@ -198,6 +198,24 @@ It also provides the audio clock used to time rhythm challenges, and it supports
 
 The Web Audio API and Pitchy are all that is needed for a working MVP. The following optional libraries could improve both the developer and user experience if time allows.
 
+#### Audio Demo / Proof of Concept
+
+A standalone `audio-demo/` has been implemented as a proof of concept for beatBound's core music functionality. The demo provides a minimal implementation of the Web Audio API and Pitchy without integrating the functionality into the full game interface.
+
+The demo:
+
+- Requests access to the user's microphone through the Web Audio API.
+- Captures microphone audio in real time and provides audio samples to Pitchy for analysis.
+- Uses Pitchy to detect the fundamental frequency of the incoming audio.
+- Converts the detected frequency into musical pitch information that can be displayed to the user.
+- Provides simple controls for starting and stopping microphone analysis.
+- Uses a minimal interface so the underlying audio-processing functionality can be tested and demonstrated independently of the final game UI.
+
+The purpose of the demo is to validate the technical approach described for FR-01 before integrating pitch detection into the battle system. It demonstrates that browser microphone input can be analyzed in real time using the same technologies planned for the production application.
+
+The `audio-demo/` is currently a standalone proof of concept and should not be considered the final architecture or user interface for beatBound. Its functionality will later be incorporated into pitch-based challenges and the `PitchAnalyzer` component of the main application.
+
+
 #### Tone.js (optional)
 
 Tone.js is a library built on top of the Web Audio API that simplifies working with music. It would provide:
