@@ -46,9 +46,9 @@ cp .env.example .env
 
 Fill in `.env`:
 
-| Variable              | Where to find it                                                          |
-| --------------------- | ------------------------------------------------------------------------- |
-| `SUPABASE_URL`        | Project Settings → Data API → Project URL                                 |
+| Variable              | Where to find it                                                         |
+| --------------------- | ------------------------------------------------------------------------ |
+| `SUPABASE_URL`        | Project Settings → Data API → Project URL                                |
 | `SUPABASE_SECRET_KEY` | Project Settings → API Keys → **Secret keys** (starts with `sb_secret_`) |
 
 Then:

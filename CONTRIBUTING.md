@@ -17,4 +17,4 @@ npm run format
 
 Our two main areas of focus regarding quality are Usability & Reliability. Because our application
 is mainly geared towards kids/students, we want it to not only be easy to learn/use, but also
-reliable since we'll be dealing with and storing different user data which is showed to different users. 
+reliable since we'll be dealing with and storing different user data which is showed to different users.
