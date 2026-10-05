@@ -32,6 +32,7 @@
 | 10/1/2026 | Edgar Olozagaste-Olea | Aligned scope, user stories, functional requirements, and NFRs with the updated UML: removed assignments, teacher-created challenges, department head, songs, and note-reading; added student reports, friends, leaderboards, parent monitoring, and game settings. Described UML diagrams in 5.3. |
 | 10/2/2026 | Amogh Arora | TE3: Added consolidated class diagram (design/umls/beatBound_class_diagram.drawio.png) combining the 5 existing UMLs and revised to meet the TE3 rubric (solid directed associations with names and multiplicities, typed attributes on every class, non-persisted classes removed). Added use case diagram (design/umls/beatBound_use_case_diagram.png). Updated Section 5.3. |
 | 10/5/2026 | Edgar Olozagaste-Olea | Updated an image in the SRD. |
+| 10/5/2026 | Edgar Olozagaste-Olea | Added audio-demo section to SRD. |
 
 ---
 
