@@ -36,8 +36,7 @@
 | 10/2/2026 | Amogh Arora | TE3: Added consolidated class diagram (design/umls/beatBound_class_diagram.drawio.png) combining the 5 draft UMLs, revised to meet the TE3 rubric (solid directed associations with names and multiplicities, typed attributes on every class, non-persisted classes removed). Added use case diagram (design/umls/beatBound_use_case_diagram.png). Updated Section 5.3. |
 | 10/5/2026 | Amogh Arora | Set up Supabase (PostgreSQL) database: schema migration from the TE3 class diagram (supabase/migrations/), seed data for challenges and enemies, backend Supabase client, and setup guide (docs/supabase-setup.md). Updated Section 5.2. |
 | 10/9/2026 | Amogh Arora | TE3 resubmission: added operations to all classes in the class diagram; removed non-persisted annotation notes. |
-
-
+| 10/14/2026 | Amogh Arora | TE4: Added architecture and high-level design diagrams (design/architecture/). |
 ---
 
 # beatBound
