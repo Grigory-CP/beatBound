@@ -9,8 +9,14 @@ if (!url || !secretKey) {
   );
 }
 
-// Server-side client. The secret key bypasses Row Level Security, so this
-// client must only ever run on the backend, never in the browser.
-export const supabase = createClient(url, secretKey, {
-  auth: { persistSession: false, autoRefreshToken: false }
-});
+const options = { auth: { persistSession: false, autoRefreshToken: false } };
+
+// Shared server-side client: database queries + admin auth calls.
+// The secret key bypasses Row Level Security, so this must never reach the browser.
+export const supabase = createClient(url, secretKey, options);
+
+// A fresh client for one sign-in / refresh, so logging a user in never
+// changes the session of the shared client above.
+export function newAuthClient() {
+  return createClient(url, secretKey, options);
+}
