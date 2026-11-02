@@ -1,6 +1,8 @@
 // Quick sanity check that the backend can reach Supabase and the schema/seed
 // are in place. Run from packages/backend with: npm run db:check
-import { supabase } from "../db/supabase.js";
+import { newAuthClient } from "../db/supabase.js";
+
+const supabase = newAuthClient();
 
 const { data: challenges, error } = await supabase
   .from("challenges")

@@ -1,6 +1,6 @@
 # STUDENT PROJECT TEMPLATE (SRS)
 
-*(INSTRUCTION FOR STUDENTS: THIS DOCUMENT SERVES AS THE FORMAL 'CONTRACT' FOR YOUR TEAM PROJECT. IT MUST BE MAINTAINED IN YOUR GITHUB REPOSITORY.)*
+_(INSTRUCTION FOR STUDENTS: THIS DOCUMENT SERVES AS THE FORMAL 'CONTRACT' FOR YOUR TEAM PROJECT. IT MUST BE MAINTAINED IN YOUR GITHUB REPOSITORY.)_
 
 # beatBound
 
@@ -23,20 +23,22 @@
 
 **DOCUMENT HISTORY:**
 
-| LAST DATE CHANGED | WHO | WHAT WAS CHANGED |
-|---|---|---|
-| 9/25/2026 | Amogh Arora | Initial draft: product vision, Amogh's user stories, and related functional/non-functional requirements (TE2) |
-| 9/25/2026 | Edgar Olozagaste-Olea | Added 3 user stories along with corresponding functional requirements for TE2. |
-| 9/25/2026 | Grigory Polunin | Added 3 user stories along of functional requirements for TE2. |
-| 10/1/2026 | Edgar Olozagaste-Olea | Added Section 5.3, Technology Stack: Music Functionality (Pitchy, Web Audio API, Tone.js, VexFlow). |
-| 10/1/2026 | Edgar Olozagaste-Olea | Aligned scope, user stories, functional requirements, and NFRs with the updated UML: removed assignments, teacher-created challenges, department head, songs, and note-reading; added student reports, friends, leaderboards, parent monitoring, and game settings. Described UML diagrams in 5.3. |
-| 10/2/2026 | Amogh Arora | TE3: Added consolidated class diagram (design/umls/beatBound_class_diagram.drawio.png) combining the 5 existing UMLs and revised to meet the TE3 rubric (solid directed associations with names and multiplicities, typed attributes on every class, non-persisted classes removed). Added use case diagram (design/umls/beatBound_use_case_diagram.png). Updated Section 5.3. |
-| 10/5/2026 | Edgar Olozagaste-Olea | Updated an image in the SRD. |
-| 10/5/2026 | Edgar Olozagaste-Olea | Added audio-demo section to SRD. |
-| 10/2/2026 | Amogh Arora | TE3: Added consolidated class diagram (design/umls/beatBound_class_diagram.drawio.png) combining the 5 draft UMLs, revised to meet the TE3 rubric (solid directed associations with names and multiplicities, typed attributes on every class, non-persisted classes removed). Added use case diagram (design/umls/beatBound_use_case_diagram.png). Updated Section 5.3. |
-| 10/5/2026 | Amogh Arora | Set up Supabase (PostgreSQL) database: schema migration from the TE3 class diagram (supabase/migrations/), seed data for challenges and enemies, backend Supabase client, and setup guide (docs/supabase-setup.md). Updated Section 5.2. |
-| 10/9/2026 | Amogh Arora | TE3 resubmission: added operations to all classes in the class diagram; removed non-persisted annotation notes. |
-| 10/14/2026 | Amogh Arora | TE4: Added architecture and high-level design diagrams (design/architecture/). |
+| LAST DATE CHANGED | WHO                   | WHAT WAS CHANGED                                                                                                                                                                                                                                                                                                                                                               |
+| ----------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 9/25/2026         | Amogh Arora           | Initial draft: product vision, Amogh's user stories, and related functional/non-functional requirements (TE2)                                                                                                                                                                                                                                                                  |
+| 9/25/2026         | Edgar Olozagaste-Olea | Added 3 user stories along with corresponding functional requirements for TE2.                                                                                                                                                                                                                                                                                                 |
+| 9/25/2026         | Grigory Polunin       | Added 3 user stories along of functional requirements for TE2.                                                                                                                                                                                                                                                                                                                 |
+| 10/1/2026         | Edgar Olozagaste-Olea | Added Section 5.3, Technology Stack: Music Functionality (Pitchy, Web Audio API, Tone.js, VexFlow).                                                                                                                                                                                                                                                                            |
+| 10/1/2026         | Edgar Olozagaste-Olea | Aligned scope, user stories, functional requirements, and NFRs with the updated UML: removed assignments, teacher-created challenges, department head, songs, and note-reading; added student reports, friends, leaderboards, parent monitoring, and game settings. Described UML diagrams in 5.3.                                                                             |
+| 10/2/2026         | Amogh Arora           | TE3: Added consolidated class diagram (design/umls/beatBound_class_diagram.drawio.png) combining the 5 existing UMLs and revised to meet the TE3 rubric (solid directed associations with names and multiplicities, typed attributes on every class, non-persisted classes removed). Added use case diagram (design/umls/beatBound_use_case_diagram.png). Updated Section 5.3. |
+| 10/5/2026         | Edgar Olozagaste-Olea | Updated an image in the SRD.                                                                                                                                                                                                                                                                                                                                                   |
+| 10/5/2026         | Edgar Olozagaste-Olea | Added audio-demo section to SRD.                                                                                                                                                                                                                                                                                                                                               |
+| 10/5/2026         | Amogh Arora           | Set up Supabase (PostgreSQL) database: schema migration from the TE3 class diagram (supabase/migrations/), seed data for challenges and enemies, backend Supabase client, and setup guide (docs/supabase-setup.md). Updated Section 5.2.                                                                                                                                       |
+| 10/9/2026         | Amogh Arora           | TE3 resubmission: added operations to all classes in the class diagram; removed non-persisted annotation notes.                                                                                                                                                                                                                                                                |
+| 10/14/2026        | Amogh Arora           | TE4: Added architecture and high-level design diagrams (design/architecture/).                                                                                                                                                                                                                                                                                                 |
+| 10/17/2026        | Amogh Arora           | Backend authentication: Express API with Supabase Auth (sign-up/login for students, teachers, parents; httpOnly cookie sessions; role middleware), sign-up DB functions migration, and teacher classroom creation. Updated Sections 4, 5.1, 5.2 and 9.                                                                                                                         |
+| 11/1/2026         | Amogh Arora           | Least-privilege Supabase access (user-scoped clients + RLS policies); classroom roster/management and levels/progress endpoints; updated API and database sections.                                                                                                                                                                                                            |
+
 ---
 
 # beatBound
@@ -82,15 +84,15 @@
 - **SCOPE:** An MVP singing-and-rhythm RPG where students battle enemies via pitch-matching and rhythm challenges, plus a classroom layer where teachers and parents monitor student progress (class codes, rosters, progress reports), a student-only friends system, and classroom and global leaderboards. Out of scope for MVP: multiplayer battles, note-reading challenges, teacher-created challenges, app store deployment, monetization, full curriculum library.
 - **PRODUCT VISION:** For kids and young teens who want music practice to feel like an adventure instead of a chore, beatBound is a singing-and-rhythm RPG that turns vocal pitch-matching and rhythm drills into monster-battling gameplay, with a teacher dashboard that lets instructors organize classes and track student progress. Unlike drill-based ear-training apps (e.g., Yousician, Simply Piano) or generic rhythm games (e.g., Beat Saber, Just Dance), beatBound combines RPG-style progression with classroom management tools built specifically for group music education.
 
-| TEMPLATE ELEMENT | CONTENT |
-|---|---|
-| Target customer | Kids and young teens, and the music teachers who instruct them |
-| Need / opportunity | Music practice is repetitive and low-engagement as drills, and existing apps aren't built for classroom use |
-| Product name | beatBound |
-| Product category | A singing-and-rhythm RPG with a teacher-managed classroom layer |
-| Key benefit | Turns individual practice into game progression, while giving teachers tools to organize and monitor a whole class |
-| Primary competitive alternative | Drill-based ear-training/vocal apps (Yousician, Simply Piano) and generic rhythm games (Beat Saber, Just Dance) |
-| Primary differentiation | Combines RPG progression with built-in classroom management (rosters, class codes, progress dashboards) that neither alternative offers |
+| TEMPLATE ELEMENT                | CONTENT                                                                                                                                 |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Target customer                 | Kids and young teens, and the music teachers who instruct them                                                                          |
+| Need / opportunity              | Music practice is repetitive and low-engagement as drills, and existing apps aren't built for classroom use                             |
+| Product name                    | beatBound                                                                                                                               |
+| Product category                | A singing-and-rhythm RPG with a teacher-managed classroom layer                                                                         |
+| Key benefit                     | Turns individual practice into game progression, while giving teachers tools to organize and monitor a whole class                      |
+| Primary competitive alternative | Drill-based ear-training/vocal apps (Yousician, Simply Piano) and generic rhythm games (Beat Saber, Just Dance)                         |
+| Primary differentiation         | Combines RPG progression with built-in classroom management (rosters, class codes, progress dashboards) that neither alternative offers |
 
 ---
 
@@ -102,21 +104,21 @@ USER STORIES FOLLOW THE FORMAT: "AS A [TYPE OF USER], I WANT TO [ACTION] SO THAT
 - US-02: RHYTHM/PITCH BATTLES
 - US-03: CHARACTER PROGRESSION
 
-| ID | Requirement | Priority | Author |
-|---|---|---|---|
-| US-01 | As a student, I want to sing into my microphone and get real-time feedback on my pitch accuracy so that I know whether I'm hitting the right notes during a battle. | 1 | Amogh Arora |
-| US-02 | As a student, I want to battle monsters by completing rhythm and pitch-matching challenges so that practicing music feels like playing a game instead of a chore. | 1 | Amogh Arora |
-| US-03 | As a student, I want my character to level up and unlock new challenges as I improve so that I stay motivated to keep practicing. | 2 | Amogh Arora |
-| US-04 | As a teacher, I want to be able to provide my students with unique class codes to join my classroom so that I may be able to monitor their progress. | 1 | Edgar Olozagaste-Olea |
-| US-05 | As a student, I want to be able to pause and resume my challenges so that I do not lose progress if I am interrupted. | 2 | Edgar Olozagaste-Olea |
-| US-06 | As a teacher, I want to see which challenges my students struggle with the most so that I can focus my support where it is needed. | 3 | Edgar Olozagaste-Olea |
-| US-07 | As a teacher, I want to view progress reports for my classroom and for each student so that I can monitor engagement and discuss progress with parents. | 1 | Grigory Polunin |
-| US-08 | As a teacher, I want an engaging, but distraction free platform from my students to learn, where other app usage can be restricted to maintain student focus. | 2 | Grigory Polunin |
-| US-09 | As a parent, I want my child to learn music through interactive approaches, while being able to reduce or disable and control game options, and gambling-like in game features. | 3 | Grigory Polunin |
-| US-10 | As a student, I want to send and accept friend requests from other students so that I can connect with friends and stay motivated. | 3 | Edgar Olozagaste-Olea |
-| US-11 | As a student, I want to see how I rank among my classmates on a classroom leaderboard so that I feel motivated to improve. | 3 | Edgar Olozagaste-Olea |
-| US-12 | As a student, I want my classroom to appear on a global leaderboard so that my class can compete with other classrooms. | 3 | Edgar Olozagaste-Olea |
-| US-13 | As a parent, I want to view my child's progress report so that I can follow their practice. | 2 | Edgar Olozagaste-Olea |
+| ID    | Requirement                                                                                                                                                                     | Priority | Author                |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | --------------------- |
+| US-01 | As a student, I want to sing into my microphone and get real-time feedback on my pitch accuracy so that I know whether I'm hitting the right notes during a battle.             | 1        | Amogh Arora           |
+| US-02 | As a student, I want to battle monsters by completing rhythm and pitch-matching challenges so that practicing music feels like playing a game instead of a chore.               | 1        | Amogh Arora           |
+| US-03 | As a student, I want my character to level up and unlock new challenges as I improve so that I stay motivated to keep practicing.                                               | 2        | Amogh Arora           |
+| US-04 | As a teacher, I want to be able to provide my students with unique class codes to join my classroom so that I may be able to monitor their progress.                            | 1        | Edgar Olozagaste-Olea |
+| US-05 | As a student, I want to be able to pause and resume my challenges so that I do not lose progress if I am interrupted.                                                           | 2        | Edgar Olozagaste-Olea |
+| US-06 | As a teacher, I want to see which challenges my students struggle with the most so that I can focus my support where it is needed.                                              | 3        | Edgar Olozagaste-Olea |
+| US-07 | As a teacher, I want to view progress reports for my classroom and for each student so that I can monitor engagement and discuss progress with parents.                         | 1        | Grigory Polunin       |
+| US-08 | As a teacher, I want an engaging, but distraction free platform from my students to learn, where other app usage can be restricted to maintain student focus.                   | 2        | Grigory Polunin       |
+| US-09 | As a parent, I want my child to learn music through interactive approaches, while being able to reduce or disable and control game options, and gambling-like in game features. | 3        | Grigory Polunin       |
+| US-10 | As a student, I want to send and accept friend requests from other students so that I can connect with friends and stay motivated.                                              | 3        | Edgar Olozagaste-Olea |
+| US-11 | As a student, I want to see how I rank among my classmates on a classroom leaderboard so that I feel motivated to improve.                                                      | 3        | Edgar Olozagaste-Olea |
+| US-12 | As a student, I want my classroom to appear on a global leaderboard so that my class can compete with other classrooms.                                                         | 3        | Edgar Olozagaste-Olea |
+| US-13 | As a parent, I want to view my child's progress report so that I can follow their practice.                                                                                     | 2        | Edgar Olozagaste-Olea |
 
 ---
 
@@ -124,31 +126,32 @@ USER STORIES FOLLOW THE FORMAT: "AS A [TYPE OF USER], I WANT TO [ACTION] SO THAT
 
 THE SYSTEM SHALL...
 
-| ID | REQUIREMENT | PRIORITY |
-|---|---|---|
-| FR-01 | Analyze microphone audio input and provide real-time pitch-accuracy feedback during gameplay. | 1 |
-| FR-02 | Present rhythm and pitch-matching challenges as "battles" against in-game enemies. | 1 |
-| FR-03 | Track player level/progression and unlock new challenges based on performance. | 2 |
-| FR-04 | Teacher and student specific sign-up roles. | 1 |
-| FR-05 | A classroom providing teachers with oversight of their students. | 1 |
-| FR-06 | Pause and resume functionality inside each match. | 2 |
-| FR-07 | Stored progress for each specific level. | 2 |
-| FR-08 | A classroom report showing teachers each student's progress and the challenges the class struggles with most. | 3 |
-| FR-09 | A student-only friends system where students can send, accept, decline, and remove friend requests. | 3 |
-| FR-10 | A student report for each student that tracks score, battles won, accuracy, and progress on every level, updated only by that student's own gameplay. | 2 |
-| FR-11 | A classroom leaderboard ranking the students in a classroom using their student reports. | 3 |
-| FR-12 | A global leaderboard ranking classrooms against each other. | 3 |
-| FR-13 | Parent accounts that can be linked to a student and can view that student's report. | 2 |
-| FR-14 | Per-student game settings that a parent can use to reduce or disable random-reward features, sound, and daily play time. | 3 |
+| ID    | REQUIREMENT                                                                                                                                           | PRIORITY |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| FR-01 | Analyze microphone audio input and provide real-time pitch-accuracy feedback during gameplay.                                                         | 1        |
+| FR-02 | Present rhythm and pitch-matching challenges as "battles" against in-game enemies.                                                                    | 1        |
+| FR-03 | Track player level/progression and unlock new challenges based on performance.                                                                        | 2        |
+| FR-04 | Teacher and student specific sign-up roles.                                                                                                           | 1        |
+| FR-05 | A classroom providing teachers with oversight of their students.                                                                                      | 1        |
+| FR-06 | Pause and resume functionality inside each match.                                                                                                     | 2        |
+| FR-07 | Stored progress for each specific level.                                                                                                              | 2        |
+| FR-08 | A classroom report showing teachers each student's progress and the challenges the class struggles with most.                                         | 3        |
+| FR-09 | A student-only friends system where students can send, accept, decline, and remove friend requests.                                                   | 3        |
+| FR-10 | A student report for each student that tracks score, battles won, accuracy, and progress on every level, updated only by that student's own gameplay. | 2        |
+| FR-11 | A classroom leaderboard ranking the students in a classroom using their student reports.                                                              | 3        |
+| FR-12 | A global leaderboard ranking classrooms against each other.                                                                                           | 3        |
+| FR-13 | Parent accounts that can be linked to a student and can view that student's report.                                                                   | 2        |
+| FR-14 | Per-student game settings that a parent can use to reduce or disable random-reward features, sound, and daily play time.                              | 3        |
 
-*(Functional requirement for US-08 is pending a team decision on teacher focus mode.)*
+_(Functional requirement for US-08 is pending a team decision on teacher focus mode.)_
 
 ---
 
 ## 4. NON-FUNCTIONAL REQUIREMENTS
 
 - **INTEGRITY:** All audio and gameplay data submissions must be validated to handle malformed or unexpected input without crashing gameplay.
-- **SECURITY:** IMPLEMENT BCRYPT FOR PASSWORD HASHING AND ENVIRONMENT VARIABLES FOR DB CREDENTIALS. Because primary users are minors, the system should collect minimal personal data. Student accounts require only a display name and teacher-issued class code; an email may be stored for any account but is optional for students. Friends lists and leaderboards display only display names.
+- **SECURITY:** IMPLEMENT BCRYPT FOR PASSWORD HASHING AND ENVIRONMENT VARIABLES FOR DB CREDENTIALS. Because primary users are minors, the system should collect minimal personal data. Student accounts require only a username, password, display name and teacher-issued class code; students never provide an email (teachers and parents sign in with email). Friends lists and leaderboards display only display names.
+- **SECURITY:** Least privilege: user requests run with a user-scoped database client so RLS is enforced; admin access is restricted to backend service modules.
 - **USABILITY:** Pitch-detection feedback should feel real-time (well under 200ms latency). The student-facing UI must be usable by the target age group, with minimal text, clear icons, and simple navigation; the teacher dashboard should let a teacher check student progress in a few clicks.
 
 ---
@@ -157,29 +160,66 @@ THE SYSTEM SHALL...
 
 ### 5.1 REST ENDPOINTS
 
-(LIST METHOD | URL | DESCRIPTION)
+Base URL (local): `http://localhost:4000`. All requests and responses are JSON. After sign-up or login the session is kept in httpOnly cookies, so the frontend must call `fetch` with `credentials: "include"`. Errors return `{ "error": "<code>", "message": "<text>" }`. Common status codes: 400 for invalid input, 401 when not signed in, 403 for the wrong role or a locked level, and 404 when a resource is not found or is not yours.
 
-- LIST YOUR PLANNED ENDPOINTS BASED ON YOUR REST SLIDE:
-  - GET /API/RESOURCES — FETCHES COLLECTION.
-  - POST /API/RESOURCES — CREATES A NEW RESOURCE.
+**Implemented**
+
+| METHOD | URL                               | ACCESS    | DESCRIPTION                                                                                                                                                                               |
+| ------ | --------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | /api/health                       | Public    | Health check.                                                                                                                                                                             |
+| POST   | /api/auth/signup/student          | Public    | Create a student account. Body: `username`, `password`, `displayName`, `classCode`. Joins that classroom and creates the student's report, character and game settings.                   |
+| POST   | /api/auth/signup/teacher          | Public    | Create a teacher account. Body: `email`, `password`, `displayName`, optional `schoolName`.                                                                                                |
+| POST   | /api/auth/signup/parent           | Public    | Create a parent account. Body: `email`, `password`, `displayName`.                                                                                                                        |
+| POST   | /api/auth/login                   | Public    | Log in. Body: `identifier` (student username or teacher/parent email), `password`.                                                                                                        |
+| POST   | /api/auth/refresh                 | Session   | Issue a new access token from the refresh cookie.                                                                                                                                         |
+| POST   | /api/auth/logout                  | Session   | Clear the session cookies.                                                                                                                                                                |
+| GET    | /api/auth/me                      | Logged in | Current user: `id`, `role`, `displayName`.                                                                                                                                                |
+| POST   | /api/classrooms                   | Teacher   | Create a classroom with a generated 6-character class code. Body: `name`.                                                                                                                 |
+| GET    | /api/classrooms                   | Teacher   | List the teacher's own classrooms.                                                                                                                                                        |
+| GET    | /api/classrooms/:id               | Teacher   | Classroom details and student roster (username, display name, level, XP, total score, and accuracy). Another teacher's classroom returns 404.                                             |
+| PATCH  | /api/classrooms/:id               | Teacher   | Rename or archive (`is_active`) a classroom they own.                                                                                                                                     |
+| GET    | /api/classrooms/mine              | Student   | The student's classroom and teacher name.                                                                                                                                                 |
+| GET    | /api/levels                       | Logged in | Level list; for students, includes unlocked, completed, best score/accuracy, attempts, and character level/XP.                                                                            |
+| GET    | /api/levels/:levelNumber          | Logged in | One level's details and pitch or rhythm config; locked levels return 403 for students.                                                                                                    |
+| POST   | /api/levels/:levelNumber/attempts | Student   | Record `{ score, accuracy }`; pass requires accuracy ≥ 70. The first clear awards the level's XP, recalculates character level (`1 + floor(XP/100)`), and unlocks newly available levels. |
+
+**Planned** (see TE4 high-level design)
+
+| METHOD                | URL                                                    | ACCESS          | DESCRIPTION                                        |
+| --------------------- | ------------------------------------------------------ | --------------- | -------------------------------------------------- |
+| POST / PATCH          | /api/battles, /api/battles/:id                         | Student         | Start a battle; record rounds, pause, resume, end. |
+| GET                   | /api/reports/students/:id, /api/reports/classrooms/:id | Teacher, Parent | Progress reports.                                  |
+| GET                   | /api/leaderboards                                      | Logged in       | Classroom and global rankings.                     |
+| POST / PATCH / DELETE | /api/friends                                           | Student         | Send, accept/decline and remove friend requests.   |
+| POST / PATCH          | /api/parents/link, /api/parents/settings               | Parent          | Link to a child with a code; update game settings. |
 
 ### 5.2 DATABASE SCHEMA (POSTGRESQL / SUPABASE)
 
-The database is hosted on Supabase (PostgreSQL). The full schema is version-controlled as a migration: `supabase/migrations/20261003000000_initial_schema.sql`, translated directly from the TE3 class diagram (18 tables). Setup instructions: `docs/supabase-setup.md`.
+The database is hosted on Supabase (PostgreSQL). The full schema is version-controlled as migrations: `supabase/migrations/20261003000000_initial_schema.sql` (18 tables, translated directly from the TE3 class diagram) and `supabase/migrations/20261017000000_auth_signup_functions.sql` (sign-up and classroom functions). Setup instructions: `docs/supabase-setup.md`.
 
 - Accounts are managed by Supabase Auth, which hashes passwords with bcrypt.
 - `users` plus one of `students` / `teachers` / `parents` implements the User inheritance.
 - Many-to-many associations use join tables: `parent_students`, `character_unlocks`.
-- Row Level Security is enabled on every table; per-role policies will be added with authentication.
+- Least privilege: the backend uses a per-request user-scoped Supabase client (publishable key plus the user's access token), so Row Level Security applies to normal reads and updates. The secret-key admin client can only be imported from `src/services/`; service functions use it for sign-up and profile work, classroom and roster lookups, progress reads, and the attempt function.
+- Classroom RLS policies let teachers read and update only their own classrooms (`teacher_id = auth.uid()`).
+- Level attempts run in one database function, `record_level_attempt`, so progress, XP, level-ups, unlocks, and report totals update together or not at all. Only the backend's `service_role` can execute it.
+- Scores come from in-browser pitch grading; the server validates ranges only. Anti-cheat is out of scope.
+- New migrations: `20261101000000_classrooms_rls.sql`, `20261102000000_classroom_policies.sql`, and `20261102000100_level_attempts.sql`.
+- Sign-up is atomic: the backend creates the Supabase Auth account, then one database function (`create_student_profile`, `create_teacher_profile`, `create_parent_profile`) creates all profile rows in a single transaction; if it fails, the account is deleted.
+- Students sign in with a username (stored in `students.username`); their auth account uses a hidden internal email, so no student email is collected.
+- Class codes (6 characters) and parent link codes (8 characters) are generated in the database and avoid look-alike characters (0/O, 1/I).
+- Public sign-up through Supabase is disabled; accounts can only be created through the backend.
 
 ### 5.3 UMLs
 
-#### Class Diagram 
-![Class Diagram](design/umls/beatBound_class_diagram(TE3).png)
+#### Class Diagram
+
+![Class Diagram](<design/umls/beatBound_class_diagram(TE3).png>)
 
 Consolidated persisted data model. Edit the file in draw.io (or the VS Code Draw.io Integration extension); the image updates when saved.
 
 #### Use Case Diagram
+
 ![Use Case Diagram](design/umls/beatBound_use_case_diagram_v2.png)
 
 Students are the only role that plays the game. Teachers and parents act as monitors.
@@ -224,7 +264,6 @@ The purpose of the demo is to validate the technical approach described for FR-0
 
 The `audio-demo/` is currently a standalone proof of concept and should not be considered the final architecture or user interface for beatBound. Its functionality will later be incorporated into pitch-based challenges and the `PitchAnalyzer` component of the main application.
 
-
 #### Tone.js (optional)
 
 Tone.js is a library built on top of the Web Audio API that simplifies working with music. It would provide:
@@ -253,12 +292,12 @@ VexFlow is a library that renders standard music notation (staves, clefs, and no
 
 ## 8. TRACEABILITY MATRIX
 
-| ID | REQUIREMENT | LINE OF CODE |
-|---|---|---|
-| US-01 | The system will authenticate users via username and password. | 152 |
-| US-02 | Allow users to store workout information | 256 |
-| US-03 | Allow users to search their workout history | 46 |
-| US-04 | Allow users to add new workout types. | 45 |
+| ID    | REQUIREMENT                                                   | LINE OF CODE |
+| ----- | ------------------------------------------------------------- | ------------ |
+| US-01 | The system will authenticate users via username and password. | 152          |
+| US-02 | Allow users to store workout information                      | 256          |
+| US-03 | Allow users to search their workout history                   | 46           |
+| US-04 | Allow users to add new workout types.                         | 45           |
 
 ---
 
@@ -266,4 +305,6 @@ VexFlow is a library that renders standard music notation (staves, clefs, and no
 
 - **MODEL(S) USED:** [E.G., CLAUDE 3.5, GPT-4O] Claude
 - **PROMPTS USED DURING CODING:**
-Help with generating the actual diagram after feeding it all the details
+  Help with generating the actual diagram after feeding it all the details
+- **Backend authentication (10/17/2026):** Claude (Anthropic) generated the sign-up/classroom database migration and the Express authentication code (routes, middleware, services) from our TE3 schema and TE4 design. Tested by Amogh Arora against our Supabase project: teacher sign-up, login, classroom creation, student sign-up with class code, `/api/auth/me`, and role checks (403 for students on teacher routes) all passed.
+- **Least-privilege access and classroom/levels endpoints (11/1/2026):** AI assistants (Claude and GitHub Copilot) were used to plan the least-privilege refactor and the classroom/levels endpoints, generate the code and migrations, and write/run temporary API tests. All changes were reviewed and tested by Amogh Arora.
