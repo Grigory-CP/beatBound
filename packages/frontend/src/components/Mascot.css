@@ -1,0 +1,33 @@
+.mascot {
+  position: relative;
+  width: 104px;
+  height: 100px;
+  margin: 0 auto;
+}
+
+.mascot-face {
+  width: 100%;
+  height: 100%;
+  animation: mascot-bob 3.2s ease-in-out infinite;
+}
+
+.mascot-note {
+  position: absolute;
+  top: -6px;
+  right: -16px;
+  width: 18px;
+  fill: var(--brand);
+  animation: mascot-note 3.2s ease-in-out infinite;
+}
+
+@keyframes mascot-bob {
+  50% {
+    transform: translateY(-4px) rotate(-2deg);
+  }
+}
+
+@keyframes mascot-note {
+  50% {
+    transform: translateY(-6px) rotate(10deg);
+  }
+}

@@ -1,0 +1,205 @@
+.welcome {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, #fff8ea 0%, transparent 70%),
+    linear-gradient(180deg, #fffaf1 0%, #fbf6fb 60%, #f6f1fb 100%);
+}
+
+.welcome-deco {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.welcome-blob {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.welcome-blob.is-teal {
+  top: -60px;
+  right: -110px;
+  width: 340px;
+  height: 340px;
+  background: #e2f2f1;
+}
+
+.welcome-blob.is-pink {
+  bottom: -90px;
+  left: -90px;
+  width: 260px;
+  height: 260px;
+  background: #fbe4ec;
+  opacity: 0.8;
+}
+
+.welcome-note {
+  position: absolute;
+  fill: #e5dcf5;
+}
+
+.welcome-note.is-left {
+  top: 36%;
+  left: 8%;
+  width: 64px;
+  transform: rotate(-8deg);
+}
+
+.welcome-note.is-right {
+  bottom: 14%;
+  right: 9%;
+  width: 84px;
+  transform: rotate(10deg);
+}
+
+.welcome-main {
+  position: relative;
+  max-width: 712px;
+  margin: 0 auto;
+  padding: 64px 16px 40px;
+  text-align: center;
+}
+
+.welcome-eyebrow {
+  margin: 36px 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.welcome-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(44px, 9vw, 64px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+
+.welcome-brand {
+  display: block;
+  color: var(--brand);
+}
+
+.welcome-lede {
+  margin: 24px 0 40px;
+  font-size: 20px;
+  color: var(--ink-soft);
+}
+
+.welcome-roles {
+  display: grid;
+  gap: 16px;
+}
+
+.role-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 28px 18px 24px;
+  text-align: left;
+  text-decoration: none;
+  color: var(--ink);
+  background: var(--choice-bg);
+  border: 2px solid var(--choice-border);
+  border-bottom-width: 5px;
+  border-radius: 20px;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.role-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -14px var(--choice-border);
+}
+
+.role-card:active {
+  transform: translateY(1px);
+}
+
+.role-card-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  background: var(--surface);
+  border-radius: 14px;
+}
+
+.role-card-text {
+  display: grid;
+  flex: 1;
+  gap: 4px;
+}
+
+.role-card-title {
+  font-family: var(--font-display);
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.role-card-tagline {
+  font-size: 17px;
+  color: var(--ink-soft);
+}
+
+.role-card-arrow {
+  flex: none;
+  transition: transform 0.15s ease;
+}
+
+.role-card:hover .role-card-arrow {
+  transform: translateX(4px);
+}
+
+.welcome-footer {
+  text-wrap: balance;
+  margin: 36px 0 0;
+  font-size: 16px;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 560px) {
+  .welcome-main {
+    padding-top: 40px;
+  }
+
+  .welcome-note {
+    display: none;
+  }
+
+  .welcome-lede {
+    font-size: 17px;
+    margin-bottom: 28px;
+  }
+
+  .role-card {
+    gap: 14px;
+    padding: 14px 16px;
+  }
+
+  .role-card-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .role-card-title {
+    font-size: 20px;
+  }
+
+  .role-card-tagline {
+    font-size: 15px;
+  }
+}
+
+.welcome-footer svg {
+  margin-right: 8px;
+  vertical-align: -3px;
+}

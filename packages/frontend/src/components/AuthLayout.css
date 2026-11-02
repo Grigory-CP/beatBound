@@ -1,0 +1,126 @@
+.auth-page {
+  min-height: 100vh;
+  padding: 32px 16px 48px;
+  background: var(--page-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  margin: 0 0 24px 4px;
+  font-size: 20px;
+  color: var(--ink-soft);
+  border-radius: 10px;
+}
+
+.auth-back:hover {
+  color: var(--ink);
+  background: rgb(255 255 255 / 0.6);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 632px;
+  padding: 56px 56px 40px;
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: 32px;
+  box-shadow: 0 12px 40px -16px rgb(31 26 46 / 0.14);
+  text-align: center;
+  animation: card-in 0.35s ease-out;
+}
+
+.auth-icon {
+  display: grid;
+  place-items: center;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 32px;
+  color: var(--tile-ink);
+  background: var(--tile-bg);
+  border-radius: 18px;
+}
+
+.auth-heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.auth-subheading {
+  margin: 14px 0 32px;
+  font-size: 19px;
+  color: var(--ink-soft);
+}
+
+.auth-note {
+  text-wrap: balance;
+  margin: 28px 0 0;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+
+.auth-switch {
+  margin: 20px 0 0;
+  font-size: 16px;
+  color: var(--ink-soft);
+}
+
+.auth-switch a {
+  font-weight: 700;
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (max-width: 560px) {
+  .auth-page {
+    padding-top: 16px;
+  }
+
+  .auth-back {
+    margin-bottom: 12px;
+  }
+
+  .auth-card {
+    padding: 36px 22px 28px;
+    border-radius: 24px;
+  }
+
+  .auth-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 24px;
+  }
+
+  .auth-heading {
+    font-size: 27px;
+  }
+
+  .auth-subheading {
+    font-size: 17px;
+    margin-bottom: 24px;
+  }
+}
+
+.auth-note svg {
+  margin-right: 8px;
+  vertical-align: -3px;
+}
