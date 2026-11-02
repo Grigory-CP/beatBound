@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { supabase } from "../db/supabase.js";
+import { createClassroom } from "../services/classrooms.service.js";
 import { requireAuth, requireRole } from "../middleware/auth.js";
 import { AppError } from "../errors.js";
 
@@ -10,12 +10,8 @@ router.post("/", async (req, res, next) => {
   try {
     const name = req.body?.name?.trim();
     if (!name) throw new AppError(400, "missing_field", "name is required");
-    const { data, error } = await supabase.rpc("create_classroom", {
-      p_teacher_id: req.user.id,
-      p_name: name
-    });
-    if (error) throw error;
-    res.status(201).json({ classroom: data[0] });
+    const classroom = await createClassroom(req.user.id, name);
+    res.status(201).json({ classroom });
   } catch (err) {
     next(err);
   }
@@ -23,7 +19,8 @@ router.post("/", async (req, res, next) => {
 
 router.get("/", async (req, res, next) => {
   try {
-    const { data, error } = await supabase
+    // RLS is the real guard; this filter is defense in depth.
+    const { data, error } = await req.supabase
       .from("classrooms")
       .select("class_id, name, class_code, is_active, created_at")
       .eq("teacher_id", req.user.id)
