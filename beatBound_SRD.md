@@ -33,10 +33,10 @@
 | 10/2/2026 | Amogh Arora | TE3: Added consolidated class diagram (design/umls/beatBound_class_diagram.drawio.png) combining the 5 existing UMLs and revised to meet the TE3 rubric (solid directed associations with names and multiplicities, typed attributes on every class, non-persisted classes removed). Added use case diagram (design/umls/beatBound_use_case_diagram.png). Updated Section 5.3. |
 | 10/5/2026 | Edgar Olozagaste-Olea | Updated an image in the SRD. |
 | 10/5/2026 | Edgar Olozagaste-Olea | Added audio-demo section to SRD. |
-| 10/2/2026 | Amogh Arora | TE3: Added consolidated class diagram (design/umls/beatBound_class_diagram.drawio.png) combining the 5 draft UMLs, revised to meet the TE3 rubric (solid directed associations with names and multiplicities, typed attributes on every class, non-persisted classes removed). Added use case diagram (design/umls/beatBound_use_case_diagram.png). Updated Section 5.3. |
 | 10/5/2026 | Amogh Arora | Set up Supabase (PostgreSQL) database: schema migration from the TE3 class diagram (supabase/migrations/), seed data for challenges and enemies, backend Supabase client, and setup guide (docs/supabase-setup.md). Updated Section 5.2. |
 | 10/9/2026 | Amogh Arora | TE3 resubmission: added operations to all classes in the class diagram; removed non-persisted annotation notes. |
 | 10/14/2026 | Amogh Arora | TE4: Added architecture and high-level design diagrams (design/architecture/). |
+| 10/17/2026 | Amogh Arora | Backend authentication: Express API with Supabase Auth (sign-up/login for students, teachers, parents; httpOnly cookie sessions; role middleware), sign-up DB functions migration, and teacher classroom creation. Updated Sections 4, 5.1, 5.2 and 9. |
 ---
 
 # beatBound
@@ -148,7 +148,7 @@ THE SYSTEM SHALL...
 ## 4. NON-FUNCTIONAL REQUIREMENTS
 
 - **INTEGRITY:** All audio and gameplay data submissions must be validated to handle malformed or unexpected input without crashing gameplay.
-- **SECURITY:** IMPLEMENT BCRYPT FOR PASSWORD HASHING AND ENVIRONMENT VARIABLES FOR DB CREDENTIALS. Because primary users are minors, the system should collect minimal personal data. Student accounts require only a display name and teacher-issued class code; an email may be stored for any account but is optional for students. Friends lists and leaderboards display only display names.
+- **SECURITY:** IMPLEMENT BCRYPT FOR PASSWORD HASHING AND ENVIRONMENT VARIABLES FOR DB CREDENTIALS. Because primary users are minors, the system should collect minimal personal data. Student accounts require only a username, password, display name and teacher-issued class code; students never provide an email (teachers and parents sign in with email). Friends lists and leaderboards display only display names.
 - **USABILITY:** Pitch-detection feedback should feel real-time (well under 200ms latency). The student-facing UI must be usable by the target age group, with minimal text, clear icons, and simple navigation; the teacher dashboard should let a teacher check student progress in a few clicks.
 
 ---
@@ -157,20 +157,47 @@ THE SYSTEM SHALL...
 
 ### 5.1 REST ENDPOINTS
 
-(LIST METHOD | URL | DESCRIPTION)
+Base URL (local): `http://localhost:4000`. All requests and responses are JSON. After sign-up or login the session is kept in httpOnly cookies, so the frontend must call `fetch` with `credentials: "include"`. Errors return `{ "error": "<code>", "message": "<text>" }`.
 
-- LIST YOUR PLANNED ENDPOINTS BASED ON YOUR REST SLIDE:
-  - GET /API/RESOURCES — FETCHES COLLECTION.
-  - POST /API/RESOURCES — CREATES A NEW RESOURCE.
+**Implemented**
+
+| METHOD | URL | ACCESS | DESCRIPTION |
+|---|---|---|---|
+| GET | /api/health | Public | Health check. |
+| POST | /api/auth/signup/student | Public | Create a student account. Body: `username`, `password`, `displayName`, `classCode`. Joins that classroom and creates the student's report, character and game settings. |
+| POST | /api/auth/signup/teacher | Public | Create a teacher account. Body: `email`, `password`, `displayName`, optional `schoolName`. |
+| POST | /api/auth/signup/parent | Public | Create a parent account. Body: `email`, `password`, `displayName`. |
+| POST | /api/auth/login | Public | Log in. Body: `identifier` (student username or teacher/parent email), `password`. |
+| POST | /api/auth/refresh | Session | Issue a new access token from the refresh cookie. |
+| POST | /api/auth/logout | Session | Clear the session cookies. |
+| GET | /api/auth/me | Logged in | Current user: `id`, `role`, `displayName`. |
+| POST | /api/classrooms | Teacher | Create a classroom with a generated 6-character class code. Body: `name`. |
+| GET | /api/classrooms | Teacher | List the teacher's own classrooms. |
+
+**Planned** (see TE4 high-level design)
+
+| METHOD | URL | ACCESS | DESCRIPTION |
+|---|---|---|---|
+| GET | /api/classrooms/:id/students | Teacher | Classroom roster. |
+| GET | /api/challenges/:id | Student | Load a challenge for a battle. |
+| POST / PATCH | /api/battles, /api/battles/:id | Student | Start a battle; record rounds, pause, resume, end. |
+| GET | /api/reports/students/:id, /api/reports/classrooms/:id | Teacher, Parent | Progress reports. |
+| GET | /api/leaderboards | Logged in | Classroom and global rankings. |
+| POST / PATCH / DELETE | /api/friends | Student | Send, accept/decline and remove friend requests. |
+| POST / PATCH | /api/parents/link, /api/parents/settings | Parent | Link to a child with a code; update game settings. |
 
 ### 5.2 DATABASE SCHEMA (POSTGRESQL / SUPABASE)
 
-The database is hosted on Supabase (PostgreSQL). The full schema is version-controlled as a migration: `supabase/migrations/20261003000000_initial_schema.sql`, translated directly from the TE3 class diagram (18 tables). Setup instructions: `docs/supabase-setup.md`.
+The database is hosted on Supabase (PostgreSQL). The full schema is version-controlled as migrations: `supabase/migrations/20261003000000_initial_schema.sql` (18 tables, translated directly from the TE3 class diagram) and `supabase/migrations/20261017000000_auth_signup_functions.sql` (sign-up and classroom functions). Setup instructions: `docs/supabase-setup.md`.
 
 - Accounts are managed by Supabase Auth, which hashes passwords with bcrypt.
 - `users` plus one of `students` / `teachers` / `parents` implements the User inheritance.
 - Many-to-many associations use join tables: `parent_students`, `character_unlocks`.
-- Row Level Security is enabled on every table; per-role policies will be added with authentication.
+- Only the backend accesses the database (server-side secret key); the browser never talks to Supabase directly. Row Level Security stays enabled on every table as a second line of defense.
+- Sign-up is atomic: the backend creates the Supabase Auth account, then one database function (`create_student_profile`, `create_teacher_profile`, `create_parent_profile`) creates all profile rows in a single transaction; if it fails, the account is deleted.
+- Students sign in with a username (stored in `students.username`); their auth account uses a hidden internal email, so no student email is collected.
+- Class codes (6 characters) and parent link codes (8 characters) are generated in the database and avoid look-alike characters (0/O, 1/I).
+- Public sign-up through Supabase is disabled; accounts can only be created through the backend.
 
 ### 5.3 UMLs
 
@@ -267,3 +294,4 @@ VexFlow is a library that renders standard music notation (staves, clefs, and no
 - **MODEL(S) USED:** [E.G., CLAUDE 3.5, GPT-4O] Claude
 - **PROMPTS USED DURING CODING:**
 Help with generating the actual diagram after feeding it all the details
+- **Backend authentication (10/17/2026):** Claude (Anthropic) generated the sign-up/classroom database migration and the Express authentication code (routes, middleware, services) from our TE3 schema and TE4 design. Tested by Amogh Arora against our Supabase project: teacher sign-up, login, classroom creation, student sign-up with class code, `/api/auth/me`, and role checks (403 for students on teacher routes) all passed.
