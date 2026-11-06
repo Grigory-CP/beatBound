@@ -7,23 +7,29 @@ const isProd = process.env.NODE_ENV === "production";
 
 function setSessionCookies(res, session) {
   const base = { httpOnly: true, sameSite: "lax", secure: isProd, path: "/" };
-  res.cookie("bb_access", session.access_token, { ...base, maxAge: session.expires_in * 1000 });
-  res.cookie("bb_refresh", session.refresh_token, { ...base, maxAge: 30 * 24 * 60 * 60 * 1000 });
+  res.cookie("bb_access", session.access_token, {
+    ...base,
+    maxAge: session.expires_in * 1000
+  });
+  res.cookie("bb_refresh", session.refresh_token, {
+    ...base,
+    maxAge: 30 * 24 * 60 * 60 * 1000
+  });
 }
 
 const handle = (fn) => (req, res, next) => fn(req, res).catch(next);
 
-const startSession = (signupOrLogin) =>
+const startSession = (signupOrLogin, statusCode = 200) =>
   handle(async (req, res) => {
     const session = await signupOrLogin(req.body);
     setSessionCookies(res, session);
     const user = await auth.userFromToken(session.access_token);
-    res.status(200).json({ user });
+    res.status(statusCode).json({ user });
   });
 
-router.post("/signup/student", startSession(auth.signupStudent));
-router.post("/signup/teacher", startSession(auth.signupTeacher));
-router.post("/signup/parent", startSession(auth.signupParent));
+router.post("/signup/student", startSession(auth.signupStudent, 201));
+router.post("/signup/teacher", startSession(auth.signupTeacher, 201));
+router.post("/signup/parent", startSession(auth.signupParent, 201));
 router.post("/login", startSession(auth.login));
 
 router.post(

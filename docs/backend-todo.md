@@ -1,3 +1,5 @@
+Status (Nov 2026): the items below are DONE: profile/classroom RPCs (20261017000000_auth_signup_functions.sql), user-scoped Supabase client + RLS (20261101000000_classrooms_rls.sql, 20261102000000_classroom_policies.sql), and levels/attempts (20261102000100_level_attempts.sql). Kept for history.
+
 # Backend TODO
 
 This document tracks the next backend security and database-integration tasks.
