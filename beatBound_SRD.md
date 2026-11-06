@@ -38,6 +38,7 @@ _(INSTRUCTION FOR STUDENTS: THIS DOCUMENT SERVES AS THE FORMAL 'CONTRACT' FOR YO
 | 10/14/2026        | Amogh Arora           | TE4: Added architecture and high-level design diagrams (design/architecture/).                                                                                                                                                                                                                                                                                                 |
 | 10/17/2026        | Amogh Arora           | Backend authentication: Express API with Supabase Auth (sign-up/login for students, teachers, parents; httpOnly cookie sessions; role middleware), sign-up DB functions migration, and teacher classroom creation. Updated Sections 4, 5.1, 5.2 and 9.                                                                                                                         |
 | 11/1/2026         | Amogh Arora           | Least-privilege Supabase access (user-scoped clients + RLS policies); classroom roster/management and levels/progress endpoints; updated API and database sections.                                                                                                                                                                                                            |
+| 11/6/2026         | Amogh Arora           | TE6 access control: frontend wired to the auth API (httpOnly cookie sessions, automatic refresh), protected home page, sign-up returns 201; added sequence diagram references and the frontend tech stack.                                                                                                                                                                     |
 
 ---
 
@@ -158,30 +159,32 @@ _(Functional requirement for US-08 is pending a team decision on teacher focus m
 
 ## 5. SYSTEM ARCHITECTURE
 
+**Application stack:** the frontend is React + Vite (TypeScript, React Router) in `packages/frontend`; the backend is an Express API in `packages/backend`; the database and authentication are Supabase (PostgreSQL + Supabase Auth). In local development the Vite dev server runs on port 3000 and proxies `/api` requests to the Express backend on port 4000, so the browser only talks to one origin.
+
 ### 5.1 REST ENDPOINTS
 
-Base URL (local): `http://localhost:4000`. All requests and responses are JSON. After sign-up or login the session is kept in httpOnly cookies, so the frontend must call `fetch` with `credentials: "include"`. Errors return `{ "error": "<code>", "message": "<text>" }`. Common status codes: 400 for invalid input, 401 when not signed in, 403 for the wrong role or a locked level, and 404 when a resource is not found or is not yours.
+Base URL (local): `http://localhost:4000` (reached from the frontend through the Vite `/api` proxy on port 3000). All requests and responses are JSON. After sign-up or login the session is kept in httpOnly cookies, so the frontend must call `fetch` with `credentials: "include"`. Errors return `{ "error": "<code>", "message": "<text>" }`. Common status codes: 200 for success, 201 for a successful sign-up, 400 for invalid input (including `invalid_class_code` and `invalid_username`), 401 when not signed in or for `invalid_login`, 403 for the wrong role or a locked level, 404 when a resource is not found or is not yours, and 409 for `account_exists`.
 
 **Implemented**
 
-| METHOD | URL                               | ACCESS    | DESCRIPTION                                                                                                                                                                               |
-| ------ | --------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GET    | /api/health                       | Public    | Health check.                                                                                                                                                                             |
-| POST   | /api/auth/signup/student          | Public    | Create a student account. Body: `username`, `password`, `displayName`, `classCode`. Joins that classroom and creates the student's report, character and game settings.                   |
-| POST   | /api/auth/signup/teacher          | Public    | Create a teacher account. Body: `email`, `password`, `displayName`, optional `schoolName`.                                                                                                |
-| POST   | /api/auth/signup/parent           | Public    | Create a parent account. Body: `email`, `password`, `displayName`.                                                                                                                        |
-| POST   | /api/auth/login                   | Public    | Log in. Body: `identifier` (student username or teacher/parent email), `password`.                                                                                                        |
-| POST   | /api/auth/refresh                 | Session   | Issue a new access token from the refresh cookie.                                                                                                                                         |
-| POST   | /api/auth/logout                  | Session   | Clear the session cookies.                                                                                                                                                                |
-| GET    | /api/auth/me                      | Logged in | Current user: `id`, `role`, `displayName`.                                                                                                                                                |
-| POST   | /api/classrooms                   | Teacher   | Create a classroom with a generated 6-character class code. Body: `name`.                                                                                                                 |
-| GET    | /api/classrooms                   | Teacher   | List the teacher's own classrooms.                                                                                                                                                        |
-| GET    | /api/classrooms/:id               | Teacher   | Classroom details and student roster (username, display name, level, XP, total score, and accuracy). Another teacher's classroom returns 404.                                             |
-| PATCH  | /api/classrooms/:id               | Teacher   | Rename or archive (`is_active`) a classroom they own.                                                                                                                                     |
-| GET    | /api/classrooms/mine              | Student   | The student's classroom and teacher name.                                                                                                                                                 |
-| GET    | /api/levels                       | Logged in | Level list; for students, includes unlocked, completed, best score/accuracy, attempts, and character level/XP.                                                                            |
-| GET    | /api/levels/:levelNumber          | Logged in | One level's details and pitch or rhythm config; locked levels return 403 for students.                                                                                                    |
-| POST   | /api/levels/:levelNumber/attempts | Student   | Record `{ score, accuracy }`; pass requires accuracy ≥ 70. The first clear awards the level's XP, recalculates character level (`1 + floor(XP/100)`), and unlocks newly available levels. |
+| METHOD | URL                               | ACCESS    | DESCRIPTION                                                                                                                                                                                                                       |
+| ------ | --------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | /api/health                       | Public    | Health check.                                                                                                                                                                                                                     |
+| POST   | /api/auth/signup/student          | Public    | Create a student account. Body: `username`, `password`, `displayName`, `classCode`. Joins that classroom and creates the student's report, character and game settings. Returns 201 with `{ user }` and sets the session cookies. |
+| POST   | /api/auth/signup/teacher          | Public    | Create a teacher account. Body: `email`, `password`, `displayName`, optional `schoolName`. Returns 201 with `{ user }` and sets the session cookies.                                                                              |
+| POST   | /api/auth/signup/parent           | Public    | Create a parent account. Body: `email`, `password`, `displayName`. Returns 201 with `{ user }` and sets the session cookies.                                                                                                      |
+| POST   | /api/auth/login                   | Public    | Log in. Body: `identifier` (student username or teacher/parent email), `password`. Returns 200 with `{ user }` and sets the session cookies; wrong credentials return 401 `invalid_login`.                                        |
+| POST   | /api/auth/refresh                 | Session   | Uses the `bb_refresh` cookie to get a new session and resets both cookies; returns `{ ok: true }`, or 401 if the refresh cookie is missing or invalid.                                                                            |
+| POST   | /api/auth/logout                  | Session   | Clears both session cookies (`bb_access`, `bb_refresh`); returns `{ ok: true }`.                                                                                                                                                  |
+| GET    | /api/auth/me                      | Logged in | Returns `{ user: { id, role, displayName } }` for the signed-in user.                                                                                                                                                             |
+| POST   | /api/classrooms                   | Teacher   | Create a classroom with a generated 6-character class code. Body: `name`.                                                                                                                                                         |
+| GET    | /api/classrooms                   | Teacher   | List the teacher's own classrooms.                                                                                                                                                                                                |
+| GET    | /api/classrooms/:id               | Teacher   | Classroom details and student roster (username, display name, level, XP, total score, and accuracy). Another teacher's classroom returns 404.                                                                                     |
+| PATCH  | /api/classrooms/:id               | Teacher   | Rename or archive (`is_active`) a classroom they own.                                                                                                                                                                             |
+| GET    | /api/classrooms/mine              | Student   | The student's classroom and teacher name.                                                                                                                                                                                         |
+| GET    | /api/levels                       | Logged in | Level list; for students, includes unlocked, completed, best score/accuracy, attempts, and character level/XP.                                                                                                                    |
+| GET    | /api/levels/:levelNumber          | Logged in | One level's details and pitch or rhythm config; locked levels return 403 for students.                                                                                                                                            |
+| POST   | /api/levels/:levelNumber/attempts | Student   | Record `{ score, accuracy }`; pass requires accuracy ≥ 70. The first clear awards the level's XP, recalculates character level (`1 + floor(XP/100)`), and unlocks newly available levels.                                         |
 
 **Planned** (see TE4 high-level design)
 
@@ -209,6 +212,15 @@ The database is hosted on Supabase (PostgreSQL). The full schema is version-cont
 - Students sign in with a username (stored in `students.username`); their auth account uses a hidden internal email, so no student email is collected.
 - Class codes (6 characters) and parent link codes (8 characters) are generated in the database and avoid look-alike characters (0/O, 1/I).
 - Public sign-up through Supabase is disabled; accounts can only be created through the backend.
+
+#### Access control flow
+
+- Passwords are hashed with bcrypt by Supabase Auth; they are never stored in our tables, logged, or sent in URLs.
+- Sign-in returns a signed JWT access token (`bb_access`) and a refresh token (`bb_refresh`) as httpOnly, `SameSite=Lax` cookies (`Secure` in production); the frontend never reads or stores tokens (no localStorage). An `Authorization: Bearer` header is also accepted.
+- The frontend sends cookies with `credentials: "include"`; on a 401 it calls `/api/auth/refresh` once and retries the request, otherwise it returns to the start page.
+- Backend checks: `requireAuth` (401) → `requireRole` (403) → Row Level Security in Postgres via a user-scoped client (another user's data → 404/empty).
+- The protected `/home` page loads the user via `/api/auth/me` and shows role-specific data (teacher classrooms, student levels; parent placeholder) or "Data Unavailable" on errors.
+- Sequence diagrams for sign-up, sign-in, and a protected request are in README.md (Access control section).
 
 ### 5.3 UMLs
 
@@ -308,3 +320,4 @@ VexFlow is a library that renders standard music notation (staves, clefs, and no
   Help with generating the actual diagram after feeding it all the details
 - **Backend authentication (10/17/2026):** Claude (Anthropic) generated the sign-up/classroom database migration and the Express authentication code (routes, middleware, services) from our TE3 schema and TE4 design. Tested by Amogh Arora against our Supabase project: teacher sign-up, login, classroom creation, student sign-up with class code, `/api/auth/me`, and role checks (403 for students on teacher routes) all passed.
 - **Least-privilege access and classroom/levels endpoints (11/1/2026):** AI assistants (Claude and GitHub Copilot) were used to plan the least-privilege refactor and the classroom/levels endpoints, generate the code and migrations, and write/run temporary API tests. All changes were reviewed and tested by Amogh Arora.
+- **TE6 access control (11/6/2026):** AI assistants (Claude and GitHub Copilot) were used to plan and implement the TE6 frontend auth wiring and protected home page, write the sequence diagrams, and run temporary end-to-end tests (14 checks). All changes were reviewed and tested by Amogh Arora.
