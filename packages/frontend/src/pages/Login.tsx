@@ -1,10 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
-import DoneMessage from "../components/DoneMessage";
 import SubmitButton from "../components/SubmitButton";
 import TextField from "../components/TextField";
-import { login } from "../auth/api";
+import { login, mapAuthError } from "../auth/api";
 import {
   EMPTY_FORM,
   LOGIN_FIELDS,
@@ -25,8 +24,8 @@ export default function Login({ role }: LoginProps) {
   const { heading, subheading } = ROLE_CONFIG[role].login;
   const [form, setForm] = useState<AuthForm>(EMPTY_FORM);
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [formError, setFormError] = useState<string>("");
   const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState(false);
 
   function update(name: FieldName, value: string) {
     setForm((f) => ({ ...f, [name]: value }));
@@ -39,44 +38,52 @@ export default function Login({ role }: LoginProps) {
     const first = Object.keys(found)[0];
     if (first) {
       setErrors(found);
+      setFormError("");
       document.getElementById(`field-${first}`)?.focus();
       return;
     }
+
     setBusy(true);
-    await login(role, form);
-    setBusy(false);
-    setDone(true);
+    setFormError("");
+    try {
+      await login(role, form);
+      navigate("/home");
+    } catch (error) {
+      const { form, ...fieldErrors } = mapAuthError(role, error);
+      setErrors(fieldErrors);
+      setFormError(form ?? "");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
     <AuthLayout
       role={role}
-      heading={done ? "You're logged in!" : heading}
-      subheading={done ? "Great to see you again." : subheading}
-      onBack={() => navigate(done ? "/" : `/signup/${role}`)}
+      heading={heading}
+      subheading={subheading}
+      onBack={() => navigate(`/signup/${role}`)}
     >
-      {done ? (
-        <DoneMessage message="Your home page is on its way. Check back soon!" />
-      ) : (
-        <>
-          <form className="auth-form" noValidate onSubmit={handleSubmit}>
-            {fields.map((field) => (
-              <TextField
-                key={field.name}
-                field={field}
-                value={form[field.name]}
-                error={errors[field.name]}
-                onChange={(value) => update(field.name, value)}
-              />
-            ))}
-            <SubmitButton busy={busy}>Log in</SubmitButton>
-          </form>
-          <p className="auth-switch">
-            New to beatBound?{" "}
-            <Link to={`/signup/${role}`}>Create an account</Link>
+      <form className="auth-form" noValidate onSubmit={handleSubmit}>
+        {fields.map((field) => (
+          <TextField
+            key={field.name}
+            field={field}
+            value={form[field.name]}
+            error={errors[field.name]}
+            onChange={(value) => update(field.name, value)}
+          />
+        ))}
+        {formError && (
+          <p className="auth-form-alert" role="alert">
+            {formError}
           </p>
-        </>
-      )}
+        )}
+        <SubmitButton busy={busy}>Log in</SubmitButton>
+      </form>
+      <p className="auth-switch">
+        New to beatBound? <Link to={`/signup/${role}`}>Create an account</Link>
+      </p>
     </AuthLayout>
   );
 }

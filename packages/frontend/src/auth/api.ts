@@ -1,5 +1,12 @@
-import type { AuthForm } from "./fields";
+import type { AuthForm, FieldErrors } from "./fields";
 import type { Role } from "./roles";
+import { ApiError, apiFetch } from "../api/client";
+
+export interface UserProfile {
+  id: string;
+  role: string;
+  displayName: string;
+}
 
 // Request bodies for the backend auth endpoints (SRD section 5.1).
 export function signupBody(role: Role, form: AuthForm) {
@@ -29,22 +36,70 @@ export function loginBody(role: Role, form: AuthForm) {
   return { identifier: identifier.trim(), password: form.password };
 }
 
-// Frontend-only for now: these log the request they would send and resolve
-// after a short delay. Swap in fetch(..., { credentials: "include" }) calls to
-// POST /api/auth/signup/:role and /api/auth/login when wiring up the backend.
-// A parent's invite code will go to POST /api/parents/link after sign-up.
-const fakeLatency = () => new Promise((resolve) => setTimeout(resolve, 700));
+export function mapAuthError(
+  role: Role,
+  error: unknown
+): FieldErrors & { form?: string } {
+  const apiError =
+    error instanceof ApiError
+      ? error
+      : new ApiError(0, "network_error", "Can't reach the server.");
 
-function logMock(path: string, body: { password: string }) {
-  console.info(`[mock] POST ${path}`, { ...body, password: "********" });
+  if (apiError.code === "invalid_class_code") {
+    return { classCode: "We couldn't find that class code." };
+  }
+  if (apiError.code === "account_exists") {
+    return {
+      [role === "student" ? "username" : "email"]:
+        "That account already exists. Try logging in."
+    } as FieldErrors & { form?: string };
+  }
+  if (apiError.code === "invalid_username") {
+    return { username: "Use 3–20 letters, numbers or _." };
+  }
+  if (apiError.code === "invalid_login") {
+    return { password: "Wrong username/email or password." };
+  }
+  if (
+    apiError.code === "missing_field" ||
+    apiError.code === "missing_fields" ||
+    apiError.status === 400
+  ) {
+    return { form: "Please check the required details and try again." };
+  }
+  if (apiError.code === "network_error" || apiError.status >= 500) {
+    return { form: "Something went wrong. Please try again." };
+  }
+
+  return { form: "Something went wrong. Please try again." };
 }
 
-export async function signup(role: Role, form: AuthForm) {
-  logMock(`/api/auth/signup/${role}`, signupBody(role, form));
-  await fakeLatency();
+export async function signup(
+  role: Role,
+  form: AuthForm
+): Promise<{ user: UserProfile }> {
+  return apiFetch<{ user: UserProfile }>(`/api/auth/signup/${role}`, {
+    method: "POST",
+    body: JSON.stringify(signupBody(role, form))
+  });
 }
 
-export async function login(role: Role, form: AuthForm) {
-  logMock("/api/auth/login", loginBody(role, form));
-  await fakeLatency();
+export async function login(
+  role: Role,
+  form: AuthForm
+): Promise<{ user: UserProfile }> {
+  return apiFetch<{ user: UserProfile }>("/api/auth/login", {
+    method: "POST",
+    body: JSON.stringify(loginBody(role, form))
+  });
+}
+
+export async function me(): Promise<{ user: UserProfile }> {
+  return apiFetch<{ user: UserProfile }>("/api/auth/me");
+}
+
+export async function logout(): Promise<{ ok: true }> {
+  return apiFetch<{ ok: true }>("/api/auth/logout", {
+    method: "POST"
+  });
 }

@@ -1,11 +1,10 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
-import DoneMessage from "../components/DoneMessage";
 import StepProgress from "../components/StepProgress";
 import SubmitButton from "../components/SubmitButton";
 import TextField from "../components/TextField";
-import { signup } from "../auth/api";
+import { mapAuthError, signup } from "../auth/api";
 import {
   EMPTY_FORM,
   SIGNUP_STEPS,
@@ -27,8 +26,8 @@ export default function Signup({ role }: SignupProps) {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<AuthForm>(EMPTY_FORM);
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [formError, setFormError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState(false);
   const isReview = step === groups.length;
 
   // Move keyboard focus to the new step's first field.
@@ -49,34 +48,31 @@ export default function Signup({ role }: SignupProps) {
       const first = Object.keys(found)[0];
       if (first) {
         setErrors(found);
+        setFormError("");
         document.getElementById(`field-${first}`)?.focus();
         return;
       }
       setStep(step + 1);
       return;
     }
+
     setBusy(true);
-    await signup(role, form);
-    setBusy(false);
-    setDone(true);
+    setFormError("");
+    try {
+      await signup(role, form);
+      navigate("/home");
+    } catch (error) {
+      const { form: formMessage, ...fieldErrors } = mapAuthError(role, error);
+      setErrors(fieldErrors);
+      setFormError(formMessage ?? "");
+    } finally {
+      setBusy(false);
+    }
   }
 
   function goBack() {
-    if (step > 0 && !done) setStep(step - 1);
+    if (step > 0) setStep(step - 1);
     else navigate("/");
-  }
-
-  if (done) {
-    return (
-      <AuthLayout
-        role={role}
-        heading={`You're all set, ${form.displayName.trim()}!`}
-        subheading="Your account is ready."
-        onBack={() => navigate("/")}
-      >
-        <DoneMessage message="Your home page is on its way. Check back soon!" />
-      </AuthLayout>
-    );
   }
 
   return (
@@ -127,6 +123,11 @@ export default function Signup({ role }: SignupProps) {
               onChange={(value) => update(field.name, value)}
             />
           ))
+        )}
+        {formError && (
+          <p className="auth-form-alert" role="alert">
+            {formError}
+          </p>
         )}
         <SubmitButton busy={busy}>
           {isReview ? "Create account" : "Continue"}
