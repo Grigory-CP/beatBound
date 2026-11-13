@@ -17,7 +17,7 @@ export async function getRoster(classId) {
   const { data, error } = await adminSupabase
     .from("students")
     .select(
-      "user_id, username, user:users!students_user_id_fkey(display_name), character:characters!characters_student_id_fkey(level, xp), report:student_reports!student_reports_student_id_fkey(total_score, battles_won, average_accuracy)"
+      "user_id, username, user:users!students_user_id_fkey(display_name), character:characters!characters_student_id_fkey(level, xp), report:student_reports!student_reports_student_id_fkey(total_score, battles_played, battles_won, average_accuracy)"
     )
     .eq("classroom_id", classId);
   if (error) throw error;
@@ -30,6 +30,7 @@ export async function getRoster(classId) {
       level: student.character?.level,
       xp: student.character?.xp,
       total_score: student.report?.total_score,
+      battles_played: student.report?.battles_played,
       battles_won: student.report?.battles_won,
       average_accuracy: student.report?.average_accuracy
     }))
