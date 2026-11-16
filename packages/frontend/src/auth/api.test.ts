@@ -27,6 +27,26 @@ describe("mapAuthError", () => {
     });
   });
 
+  it("puts a too-long name on the name field", () => {
+    const error = new ApiError(400, "invalid_display_name", "too long");
+
+    expect(mapAuthError("teacher", error)).toEqual({
+      displayName: "Names can be up to 30 characters."
+    });
+  });
+
+  it("shows the server's reason when sign-up fails for another reason", () => {
+    const error = new ApiError(
+      400,
+      "signup_failed",
+      "Database error creating new user"
+    );
+
+    expect(mapAuthError("student", error)).toEqual({
+      form: "We couldn't create your account: Database error creating new user"
+    });
+  });
+
   it("puts a bad class code on the class code field", () => {
     const error = new ApiError(400, "invalid_class_code", "nope");
 

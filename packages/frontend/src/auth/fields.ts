@@ -52,7 +52,7 @@ const displayName = (label: string, placeholder: string): FieldDef => ({
   label,
   placeholder,
   autoComplete: "name",
-  maxLength: 40,
+  maxLength: 30, // users.display_name allows 1–30 characters
   validate: required("Please enter your name.")
 });
 

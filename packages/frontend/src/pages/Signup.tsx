@@ -65,6 +65,12 @@ export default function Signup({ role }: SignupProps) {
       const { form: formMessage, ...fieldErrors } = mapAuthError(role, error);
       setErrors(fieldErrors);
       setFormError(formMessage ?? "");
+      // The review step shows no inputs, so a field error from the server
+      // would be invisible there. Go back to the step that holds that field.
+      const errorStep = groups.findIndex((fields) =>
+        fields.some((field) => fieldErrors[field.name])
+      );
+      if (errorStep !== -1) setStep(errorStep);
     } finally {
       setBusy(false);
     }

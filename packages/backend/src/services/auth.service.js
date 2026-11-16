@@ -14,6 +14,18 @@ function requireFields(fields, body) {
   }
 }
 
+// users.display_name (and characters.name) allow 1–30 characters. Checking
+// here gives a clear error instead of a failed insert after the login exists.
+function checkDisplayName(displayName) {
+  if (displayName.trim().length > 30) {
+    throw new AppError(
+      400,
+      "invalid_display_name",
+      "Names can be up to 30 characters"
+    );
+  }
+}
+
 function checkPassword(password) {
   if (password.length < 8) {
     throw new AppError(
@@ -65,6 +77,7 @@ async function createAccount(email, password, createProfile) {
 
 export async function signupStudent(body) {
   requireFields(["username", "password", "displayName", "classCode"], body);
+  checkDisplayName(body.displayName);
   checkPassword(body.password);
   const username = body.username.trim().toLowerCase();
   if (!/^[a-z0-9_]{3,20}$/.test(username)) {
@@ -86,6 +99,7 @@ export async function signupStudent(body) {
 
 export async function signupTeacher(body) {
   requireFields(["email", "password", "displayName"], body);
+  checkDisplayName(body.displayName);
   checkPassword(body.password);
   const email = body.email.trim().toLowerCase();
   return createAccount(email, body.password, (userId) =>
@@ -100,6 +114,7 @@ export async function signupTeacher(body) {
 
 export async function signupParent(body) {
   requireFields(["email", "password", "displayName"], body);
+  checkDisplayName(body.displayName);
   checkPassword(body.password);
   const email = body.email.trim().toLowerCase();
   return createAccount(email, body.password, (userId) =>

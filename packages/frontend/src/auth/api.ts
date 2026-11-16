@@ -57,6 +57,12 @@ export function mapAuthError(
   if (apiError.code === "invalid_username") {
     return { username: "Use 3–20 letters, numbers or _." };
   }
+  if (apiError.code === "invalid_display_name") {
+    return { displayName: "Names can be up to 30 characters." };
+  }
+  if (apiError.code === "signup_failed") {
+    return { form: `We couldn't create your account: ${apiError.message}` };
+  }
   if (apiError.code === "invalid_login") {
     return { password: "Wrong username/email or password." };
   }
