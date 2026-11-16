@@ -1,348 +1,368 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ArrowRight,
-  Check,
+  ChartNoAxesColumn,
+  ChevronRight,
+  Flame,
   Lock,
   LogOut,
-  RotateCw,
-  Sparkles,
+  Music,
+  Play,
   Star,
-  Users
+  Target,
+  Trophy
 } from "lucide-react";
-import { ApiError, apiFetch } from "../api/client";
+import { Link } from "react-router-dom";
 import Mascot from "../components/Mascot";
 import NoteGlyph from "../components/NoteGlyph";
+import {
+  PREVIEW_DASHBOARD,
+  type DashboardData,
+  type DashboardDay,
+  type DashboardMove,
+  type DashboardWin,
+  type MoveKind
+} from "../student/dashboardPreview";
 import "./StudentHome.css";
 
-export interface StudentLevel {
-  challenge_id: number;
-  level_number: number;
-  title: string;
-  type: string;
-  difficulty: number;
-  unlock_level: number;
-  xp_reward: number;
-  unlocked: boolean;
-  completed: boolean;
-  best_score: number;
-  attempts: number;
-}
+// Student dashboard, matching the student Figma design. Only the student's
+// name and logging out are connected so far; everything else comes from
+// `data` (sample data by default; see student/dashboardPreview.ts).
 
-interface Character {
-  level: number;
-  xp: number;
-}
-
-interface StudentClassroom {
-  name: string;
-  teacher_name: string;
-}
-
-type Quests =
-  | { status: "loading" }
-  | { status: "error" }
-  | { status: "ready"; levels: StudentLevel[]; character: Character };
-
-type QuestStatus = "completed" | "available" | "locked";
-
-// Same rule as record_level_attempt in the database: level = 1 + floor(xp / 100).
-const XP_PER_LEVEL = 100;
-
-const MODE_LABEL: Record<string, string> = {
-  PITCH: "Sing the notes",
-  RHYTHM: "Keep the beat"
+const MOVE_LOOK: Record<MoveKind, { eyebrow: string; icon: ReactNode }> = {
+  next: { eyebrow: "Next up", icon: <Music size={24} /> },
+  practice: { eyebrow: "Practice", icon: <Target size={24} /> },
+  challenge: { eyebrow: "Challenge", icon: <Star size={24} /> },
+  review: { eyebrow: "Review", icon: <ChartNoAxesColumn size={24} /> }
 };
 
-const STATUS_LABEL: Record<QuestStatus, string> = {
-  completed: "Completed",
-  available: "Available",
-  locked: "Locked"
-};
+const NAV_ITEMS = ["Dashboard", "Practice", "Progress"] as const;
 
-function questStatus(level: StudentLevel): QuestStatus {
-  if (level.completed) return "completed";
-  return level.unlocked ? "available" : "locked";
+function ordinal(n: number) {
+  const suffix =
+    n % 100 >= 11 && n % 100 <= 13
+      ? "th"
+      : (({ 1: "st", 2: "nd", 3: "rd" } as Record<number, string>)[n % 10] ??
+        "th");
+  return `${n}${suffix}`;
 }
 
 interface StudentHomeProps {
   displayName: string;
   onLogout: () => void;
+  data?: DashboardData;
+  today?: Date;
 }
 
 export default function StudentHome({
   displayName,
-  onLogout
+  onLogout,
+  data = PREVIEW_DASHBOARD,
+  today = new Date()
 }: StudentHomeProps) {
-  const navigate = useNavigate();
-  const [quests, setQuests] = useState<Quests>({ status: "loading" });
-  const [classroom, setClassroom] = useState<StudentClassroom | null>(null);
-  const [reloads, setReloads] = useState(0);
-
-  useEffect(() => {
-    let active = true;
-
-    apiFetch<{ levels?: StudentLevel[]; character?: Character }>("/api/levels")
-      .then((response) => {
-        if (!active) return;
-        setQuests({
-          status: "ready",
-          levels: response.levels ?? [],
-          character: response.character ?? { level: 1, xp: 0 }
-        });
-      })
-      .catch((error) => {
-        if (!active) return;
-        if (error instanceof ApiError && error.status === 401) {
-          navigate("/", { replace: true });
-          return;
-        }
-        setQuests({ status: "error" });
-      });
-
-    // The class card is a nice-to-have: if it fails, the page still works.
-    apiFetch<{ classroom?: StudentClassroom }>("/api/classrooms/mine")
-      .then((response) => {
-        if (active) setClassroom(response.classroom ?? null);
-      })
-      .catch(() => {});
-
-    return () => {
-      active = false;
-    };
-  }, [navigate, reloads]);
-
-  function retry() {
-    setQuests({ status: "loading" });
-    setReloads((n) => n + 1);
-  }
-
   const firstName = displayName.trim().split(/\s+/)[0] || displayName;
+  const weekday = today.toLocaleDateString("en-US", { weekday: "long" });
 
   return (
     <div className="student-home theme-student">
-      <header className="sh-topbar">
-        <span className="sh-brand">
-          <NoteGlyph className="sh-brand-note" />
-          <span className="sh-brand-word">
-            beat<span>Bound</span>
-          </span>
-        </span>
-        <div className="sh-player">
-          <span className="sh-avatar" aria-hidden="true">
-            {firstName.charAt(0).toUpperCase()}
-          </span>
-          {quests.status === "ready" && (
-            <XpMeter character={quests.character} />
-          )}
-          <button type="button" className="sh-logout" onClick={onLogout}>
-            <LogOut size={18} aria-hidden="true" />
-            <span className="sh-logout-text">Log out</span>
-          </button>
-        </div>
-      </header>
+      <TopBar
+        displayName={displayName}
+        initial={firstName.charAt(0).toUpperCase()}
+        streakDays={data.streakDays}
+        onLogout={onLogout}
+      />
 
       <main className="sh-main">
-        <section className="sh-hero">
-          <p className="sh-hello">Hi, {displayName}</p>
-          <h1>Ready for today&apos;s quest?</h1>
-          <p className="sh-tagline">
-            Sing. Keep the beat. Level up your music journey!
-          </p>
-        </section>
-
-        {quests.status === "loading" && (
-          <p className="sh-status" role="status">
-            Loading your quests…
-          </p>
-        )}
-
-        {quests.status === "error" && (
-          <div className="sh-status sh-status-error" role="alert">
-            <p>We couldn&apos;t load your quests.</p>
-            <button type="button" className="sh-retry" onClick={retry}>
-              <RotateCw size={18} aria-hidden="true" />
-              Try again
+        <section className="sh-hero" aria-labelledby="sh-hero-title">
+          <div className="sh-hero-text">
+            <p className="sh-eyebrow sh-eyebrow-brand">
+              {weekday} · Your {ordinal(data.streakDays)} day in a row
+            </p>
+            <h1 id="sh-hero-title">Let&rsquo;s make music, {firstName}!</h1>
+            <p className="sh-hero-sub">
+              Keep your streak alive with today&rsquo;s{" "}
+              {data.dailyGoal.goalMinutes}-minute session.
+            </p>
+            <button type="button" className="sh-button-primary">
+              <Play size={18} aria-hidden="true" />
+              Start today&rsquo;s lesson
             </button>
           </div>
-        )}
+          <NoteGlyph className="sh-hero-note" />
+          <DailyGoal {...data.dailyGoal} />
+        </section>
 
-        {quests.status === "ready" && (
-          <>
-            <FeaturedQuest levels={quests.levels} />
-            <QuestPath levels={quests.levels} />
-            <div className="sh-cards">
-              {classroom && (
-                <section className="sh-card" aria-labelledby="sh-class-title">
-                  <span className="sh-card-icon" aria-hidden="true">
-                    <Users size={26} />
-                  </span>
-                  <div>
-                    <h2 id="sh-class-title" className="sh-card-label">
-                      Your class
-                    </h2>
-                    <p className="sh-card-value">{classroom.name}</p>
-                    <p className="sh-card-meta">
-                      with {classroom.teacher_name}
-                    </p>
-                  </div>
-                </section>
-              )}
-              <NextUnlock levels={quests.levels} />
+        <section className="sh-adventure" aria-labelledby="sh-moves-title">
+          <div className="sh-section-head">
+            <div>
+              <p className="sh-eyebrow">Your adventure</p>
+              <h2 id="sh-moves-title">Pick your next move</h2>
             </div>
-          </>
-        )}
+            <button type="button" className="sh-link">
+              View progress
+              <ArrowRight size={18} aria-hidden="true" />
+            </button>
+          </div>
+          <ul className="sh-moves">
+            {data.moves.map((move) => (
+              <MoveCard key={move.id} move={move} />
+            ))}
+          </ul>
+        </section>
+
+        <div className="sh-panels">
+          <WeeklyRhythm week={data.week} goals={data.weeklyGoals} />
+          <LatestWins wins={data.wins} />
+        </div>
       </main>
-    </div>
-  );
-}
 
-function XpMeter({ character }: { character: Character }) {
-  const xpIntoLevel = character.xp % XP_PER_LEVEL;
-  return (
-    <div className="sh-xp">
-      <span className="sh-xp-level">Level {character.level}</span>
-      <span
-        className="sh-xp-track"
-        role="progressbar"
-        aria-label="XP toward the next level"
-        aria-valuemin={0}
-        aria-valuemax={XP_PER_LEVEL}
-        aria-valuenow={xpIntoLevel}
-      >
-        <span
-          className="sh-xp-fill"
-          style={{ width: `${(xpIntoLevel / XP_PER_LEVEL) * 100}%` }}
-        />
-      </span>
-      <span className="sh-xp-total">{character.xp} XP</span>
-    </div>
-  );
-}
-
-function FeaturedQuest({ levels }: { levels: StudentLevel[] }) {
-  const next = levels.find((level) => level.unlocked && !level.completed);
-
-  if (!next) {
-    const locked = levels.find((level) => !level.unlocked);
-    return (
-      <section className="sh-quest sh-quest-done">
-        <div className="sh-quest-art">
-          <Mascot />
-        </div>
-        <div className="sh-quest-body">
-          <h2>
-            {levels.length === 0
-              ? "No quests yet"
-              : locked
-                ? "Every open quest is done!"
-                : "You finished every quest!"}
-          </h2>
-          <p className="sh-quest-mode">
-            {levels.length === 0
-              ? "Check back soon for your first quest."
-              : locked
-                ? `Reach level ${locked.unlock_level} to unlock ${locked.title}.`
-                : "Amazing work. New worlds are on the way."}
+      <footer className="sh-footer">
+        <div className="sh-footer-inner">
+          <p>
+            <strong>beatBound</strong>
+            <span>Music learning that moves with you.</span>
           </p>
+          <button
+            type="button"
+            className="sh-button-outline"
+            onClick={onLogout}
+          >
+            Switch role
+          </button>
         </div>
-      </section>
-    );
-  }
+      </footer>
+    </div>
+  );
+}
+
+function TopBar({
+  displayName,
+  initial,
+  streakDays,
+  onLogout
+}: {
+  displayName: string;
+  initial: string;
+  streakDays: number;
+  onLogout: () => void;
+}) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close the account menu on Escape or a click outside it.
+  useEffect(() => {
+    if (!menuOpen) return;
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") setMenuOpen(false);
+    }
+    function onClick(event: MouseEvent) {
+      if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onClick);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onClick);
+    };
+  }, [menuOpen]);
 
   return (
-    <section className="sh-quest" aria-labelledby="sh-quest-title">
-      <div className="sh-quest-art">
+    <header className="sh-topbar">
+      <div className="sh-topbar-inner">
+        <span className="sh-brand">
+          <span className="sh-brand-tile" aria-hidden="true">
+            <Music size={22} />
+          </span>
+          beatBound
+        </span>
+
+        <nav className="sh-nav" aria-label="Student">
+          {NAV_ITEMS.map((item) =>
+            item === "Dashboard" ? (
+              <Link key={item} to="/home" aria-current="page">
+                {item}
+              </Link>
+            ) : (
+              <button key={item} type="button" title="Coming soon">
+                {item}
+              </button>
+            )
+          )}
+        </nav>
+
+        <div className="sh-topbar-right">
+          <span className="sh-streak">
+            <Flame size={18} aria-hidden="true" />
+            {streakDays}
+            <span className="sh-streak-text"> day streak</span>
+          </span>
+          <div className="sh-account" ref={menuRef}>
+            <button
+              type="button"
+              className="sh-avatar"
+              aria-label={`Account menu for ${displayName}`}
+              aria-expanded={menuOpen}
+              aria-controls="sh-account-menu"
+              onClick={() => setMenuOpen((open) => !open)}
+            >
+              {initial}
+            </button>
+            {menuOpen && (
+              <div id="sh-account-menu" className="sh-account-menu">
+                <p>{displayName}</p>
+                <button type="button" onClick={onLogout}>
+                  <LogOut size={18} aria-hidden="true" />
+                  Log out
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function DailyGoal({
+  doneMinutes,
+  goalMinutes
+}: {
+  doneMinutes: number;
+  goalMinutes: number;
+}) {
+  const share = Math.min(1, doneMinutes / goalMinutes);
+  return (
+    <div className="sh-goal">
+      <div className="sh-goal-mascot">
         <Mascot />
       </div>
-      <div className="sh-quest-body">
-        <p className="sh-eyebrow">
-          {next.attempts > 0 ? "Keep going" : "Next quest"} · Level{" "}
-          {next.level_number}
+      <div className="sh-goal-text">
+        <p className="sh-goal-label">Your daily goal</p>
+        <p className="sh-goal-value">
+          {doneMinutes} / {goalMinutes} min
         </p>
-        <h2 id="sh-quest-title">{next.title}</h2>
-        <p className="sh-quest-mode">{MODE_LABEL[next.type] ?? next.type}</p>
-        <ul className="sh-chips">
-          <li>
-            <Star size={16} aria-hidden="true" />
-            {next.xp_reward} XP
-          </li>
-          <li>Difficulty {next.difficulty} of 5</li>
-          {next.attempts > 0 && <li>Best score {next.best_score}</li>}
-        </ul>
-        <button type="button" className="sh-cta" disabled>
-          Start quest
-          <ArrowRight size={20} aria-hidden="true" />
-        </button>
-        <p className="sh-note">Battles open soon. Warm up your voice!</p>
+        <span
+          className="sh-meter"
+          role="progressbar"
+          aria-label="Daily goal"
+          aria-valuemin={0}
+          aria-valuemax={goalMinutes}
+          aria-valuenow={doneMinutes}
+        >
+          <span style={{ width: `${share * 100}%` }} />
+        </span>
       </div>
-    </section>
+    </div>
   );
 }
 
-function QuestPath({ levels }: { levels: StudentLevel[] }) {
-  if (levels.length === 0) return null;
-  const next = levels.find((level) => level.unlocked && !level.completed);
-
+function MoveCard({ move }: { move: DashboardMove }) {
+  const look = MOVE_LOOK[move.kind];
   return (
-    <section className="sh-path" aria-labelledby="sh-path-title">
-      <h2 id="sh-path-title">Your quests</h2>
-      <ol className="sh-path-list">
-        {levels.map((level) => {
-          const status = questStatus(level);
-          return (
-            <li
-              key={level.challenge_id}
-              className="sh-node"
-              data-status={status}
-              aria-current={level === next ? "step" : undefined}
-            >
-              <span className="sh-node-badge" aria-hidden="true">
-                {status === "completed" ? (
-                  <Check size={22} strokeWidth={3} />
-                ) : status === "locked" ? (
-                  <Lock size={20} />
-                ) : (
-                  level.level_number
-                )}
-              </span>
-              <span className="sh-node-title">
-                <span className="visually-hidden">
-                  Level {level.level_number}:{" "}
-                </span>
-                {level.title}
-              </span>
-              <span className="sh-node-status">
-                {STATUS_LABEL[status]}
-                {status === "completed" && ` · Best ${level.best_score}`}
-                {status === "locked" && ` · Level ${level.unlock_level}`}
-              </span>
-            </li>
-          );
-        })}
+    <li>
+      <button
+        type="button"
+        className="sh-move"
+        data-kind={move.kind}
+        disabled={move.locked}
+      >
+        <span className="sh-move-icon" aria-hidden="true">
+          {look.icon}
+        </span>
+        <span className="sh-move-eyebrow">{look.eyebrow}</span>
+        <span className="sh-move-title">{move.title}</span>
+        <span className="sh-move-sub">{move.subtitle}</span>
+        <span className="sh-move-foot">
+          {move.locked ? (
+            <>
+              Locked
+              <Lock size={18} aria-hidden="true" />
+            </>
+          ) : (
+            <>
+              {move.minutes} min
+              <ChevronRight size={20} aria-hidden="true" />
+            </>
+          )}
+        </span>
+      </button>
+    </li>
+  );
+}
+
+function WeeklyRhythm({
+  week,
+  goals
+}: {
+  week: DashboardDay[];
+  goals: { done: number; total: number };
+}) {
+  const most = Math.max(1, ...week.map((day) => day.minutes));
+  return (
+    <section className="sh-panel" aria-labelledby="sh-week-title">
+      <div className="sh-panel-head">
+        <h2 id="sh-week-title">Weekly rhythm</h2>
+        <span className="sh-panel-meta">
+          {goals.done} of {goals.total} goals
+        </span>
+      </div>
+      <ol className="sh-week">
+        {week.map((day) => (
+          <li key={day.name} data-played={day.played}>
+            <span
+              className="sh-week-bar"
+              style={{
+                height: day.played
+                  ? `${20 + (day.minutes / most) * 60}%`
+                  : "45%"
+              }}
+              aria-hidden="true"
+            />
+            <span className="sh-week-label" aria-hidden="true">
+              {day.label}
+            </span>
+            <span className="visually-hidden">
+              {day.name}:{" "}
+              {day.played ? `${day.minutes} minutes` : "not played yet"}
+            </span>
+          </li>
+        ))}
       </ol>
     </section>
   );
 }
 
-function NextUnlock({ levels }: { levels: StudentLevel[] }) {
-  const locked = levels.find((level) => !level.unlocked);
+function LatestWins({ wins }: { wins: DashboardWin[] }) {
   return (
-    <section className="sh-card" aria-labelledby="sh-unlock-title">
-      <span className="sh-card-icon sh-card-icon-night" aria-hidden="true">
-        <Sparkles size={26} />
-      </span>
-      <div>
-        <h2 id="sh-unlock-title" className="sh-card-label">
-          Next unlock
-        </h2>
-        <p className="sh-card-value">
-          {locked ? locked.title : "Everything is unlocked"}
-        </p>
-        {locked && (
-          <p className="sh-card-meta">Reach level {locked.unlock_level}</p>
-        )}
+    <section className="sh-panel" aria-labelledby="sh-wins-title">
+      <div className="sh-panel-head">
+        <h2 id="sh-wins-title">Latest wins</h2>
+        <button type="button" className="sh-link">
+          See all
+        </button>
       </div>
+      <ul className="sh-wins">
+        {wins.map((win) => (
+          <li key={win.id}>
+            <span
+              className="sh-win-icon"
+              data-kind={win.kind}
+              aria-hidden="true"
+            >
+              {win.kind === "trophy" ? (
+                <Trophy size={22} />
+              ) : (
+                <Star size={22} />
+              )}
+            </span>
+            <span className="sh-win-text">
+              <strong>{win.title}</strong>
+              <span>{win.detail}</span>
+            </span>
+            <span className="sh-win-reward">{win.reward}</span>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

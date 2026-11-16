@@ -1,236 +1,149 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
-import StudentHome, { type StudentLevel } from "./StudentHome";
+import StudentHome from "./StudentHome";
+import {
+  PREVIEW_DASHBOARD,
+  type DashboardData
+} from "../student/dashboardPreview";
 
-const level = (overrides: Partial<StudentLevel>): StudentLevel => ({
-  challenge_id: 1,
-  level_number: 1,
-  title: "First Notes",
-  type: "PITCH",
-  difficulty: 1,
-  unlock_level: 1,
-  xp_reward: 50,
-  unlocked: true,
-  completed: false,
-  best_score: 0,
-  attempts: 0,
-  ...overrides
-});
+const MONDAY = new Date(2026, 10, 16);
 
-const LEVELS = [
-  level({ completed: true, best_score: 850, attempts: 2 }),
-  level({
-    challenge_id: 2,
-    level_number: 2,
-    title: "Keep the Beat",
-    type: "RHYTHM",
-    difficulty: 2,
-    xp_reward: 75
-  }),
-  level({
-    challenge_id: 3,
-    level_number: 3,
-    title: "Echo Cavern",
-    unlocked: false,
-    unlock_level: 2
-  })
-];
-
-type Reply = { status: number; body: unknown } | "network-error";
-
-// Fakes the backend: each path gets one reply, or a list of replies in order.
-function fakeBackend(routes: Record<string, Reply | Reply[]>) {
-  const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-    const path = String(input);
-    const entry = routes[path];
-    const reply = Array.isArray(entry) ? entry.shift() : entry;
-    if (!reply) return new Response("{}", { status: 404 });
-    if (reply === "network-error") throw new TypeError("Failed to fetch");
-    return new Response(JSON.stringify(reply.body), {
-      status: reply.status,
-      headers: { "Content-Type": "application/json" }
-    });
-  });
-  vi.stubGlobal("fetch", fetchMock);
-  return fetchMock;
-}
-
-const levelsReply = (levels: StudentLevel[], xp = 50) => ({
-  status: 200,
-  body: { levels, character: { level: 1 + Math.floor(xp / 100), xp } }
-});
-
-const classroomReply = {
-  status: 200,
-  body: { classroom: { name: "Period 1 Choir", teacher_name: "Ms. Samira" } }
-};
-
-function renderHome(onLogout = vi.fn()) {
+function renderHome(data?: DashboardData) {
+  const onLogout = vi.fn();
   render(
     <MemoryRouter initialEntries={["/home"]}>
-      <Routes>
-        <Route
-          path="/home"
-          element={<StudentHome displayName="Nova Kim" onLogout={onLogout} />}
-        />
-        <Route path="/" element={<p>Welcome page</p>} />
-      </Routes>
+      <StudentHome
+        displayName="Nova Kim"
+        onLogout={onLogout}
+        data={data}
+        today={MONDAY}
+      />
     </MemoryRouter>
   );
-  return onLogout;
+  return { onLogout, user: userEvent.setup() };
 }
 
-describe("Student home page", () => {
-  it("greets the student and shows their level and XP", async () => {
-    fakeBackend({
-      "/api/levels": levelsReply(LEVELS, 150),
-      "/api/classrooms/mine": classroomReply
-    });
-    renderHome();
-
-    expect(screen.getByText("Hi, Nova Kim")).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: "Ready for today's quest?" })
-    ).toBeInTheDocument();
-    expect(await screen.findByText("Level 2")).toBeInTheDocument();
-    expect(screen.getByText("150 XP")).toBeInTheDocument();
-    expect(
-      screen.getByRole("progressbar", { name: "XP toward the next level" })
-    ).toHaveAttribute("aria-valuenow", "50");
-  });
-
-  it("features the first open quest that isn't completed yet", async () => {
-    fakeBackend({
-      "/api/levels": levelsReply(LEVELS),
-      "/api/classrooms/mine": classroomReply
-    });
-    renderHome();
-
-    const quest = await screen.findByRole("region", { name: "Keep the Beat" });
-    expect(quest).toHaveTextContent("Next quest · Level 2");
-    expect(quest).toHaveTextContent("Keep the beat");
-    expect(quest).toHaveTextContent("75 XP");
-    expect(quest).toHaveTextContent("Difficulty 2 of 5");
-    expect(
-      within(quest).getByRole("button", { name: "Start quest" })
-    ).toBeDisabled();
-  });
-
-  it("shows every quest as completed, available or locked", async () => {
-    fakeBackend({
-      "/api/levels": levelsReply(LEVELS),
-      "/api/classrooms/mine": classroomReply
-    });
-    renderHome();
-
-    const path = await screen.findByRole("region", { name: "Your quests" });
-    const [first, second, third] = within(path).getAllByRole("listitem");
-    expect(first).toHaveTextContent("First Notes");
-    expect(first).toHaveTextContent("Completed · Best 850");
-    expect(second).toHaveTextContent("Keep the Beat");
-    expect(second).toHaveTextContent("Available");
-    expect(second).toHaveAttribute("aria-current", "step");
-    expect(third).toHaveTextContent("Echo Cavern");
-    expect(third).toHaveTextContent("Locked · Level 2");
-  });
-
-  it("shows the student's class and the next quest to unlock", async () => {
-    fakeBackend({
-      "/api/levels": levelsReply(LEVELS),
-      "/api/classrooms/mine": classroomReply
-    });
-    renderHome();
-
-    const classCard = await screen.findByRole("region", { name: "Your class" });
-    expect(classCard).toHaveTextContent("Period 1 Choir");
-    expect(classCard).toHaveTextContent("with Ms. Samira");
-    const unlockCard = screen.getByRole("region", { name: "Next unlock" });
-    expect(unlockCard).toHaveTextContent("Echo Cavern");
-    expect(unlockCard).toHaveTextContent("Reach level 2");
-  });
-
-  it("still works when the class can't be loaded", async () => {
-    fakeBackend({
-      "/api/levels": levelsReply(LEVELS),
-      "/api/classrooms/mine": { status: 500, body: { error: "server_error" } }
-    });
+describe("Student dashboard", () => {
+  it("greets the student by first name with today's streak", () => {
     renderHome();
 
     expect(
-      await screen.findByRole("region", { name: "Your quests" })
-    ).toBeInTheDocument();
-    expect(screen.queryByRole("region", { name: "Your class" })).toBeNull();
-  });
-
-  it("celebrates when every open quest is done", async () => {
-    fakeBackend({
-      "/api/levels": levelsReply([
-        level({ completed: true }),
-        level({
-          challenge_id: 3,
-          level_number: 3,
-          title: "Echo Cavern",
-          unlocked: false,
-          unlock_level: 2
-        })
-      ]),
-      "/api/classrooms/mine": classroomReply
-    });
-    renderHome();
-
-    expect(
-      await screen.findByRole("heading", { name: "Every open quest is done!" })
+      screen.getByRole("heading", { level: 1, name: "Let’s make music, Nova!" })
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Reach level 2 to unlock Echo Cavern.")
+      screen.getByText("Monday · Your 6th day in a row")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("day streak", { exact: false }).parentElement
+    ).toHaveTextContent("6 day streak");
+    expect(
+      screen.getByRole("button", { name: "Start today’s lesson" })
     ).toBeInTheDocument();
   });
 
-  it("lets the student try again when the quests fail to load", async () => {
-    fakeBackend({
-      "/api/levels": ["network-error", levelsReply(LEVELS)],
-      "/api/classrooms/mine": classroomReply
-    });
+  it("marks Dashboard as the current page in the top navigation", () => {
     renderHome();
-    const user = userEvent.setup();
 
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "We couldn't load your quests."
-    );
-    await user.click(screen.getByRole("button", { name: "Try again" }));
-
+    const nav = screen.getByRole("navigation", { name: "Student" });
     expect(
-      await screen.findByRole("region", { name: "Your quests" })
-    ).toBeInTheDocument();
-    expect(screen.queryByRole("alert")).toBeNull();
+      within(nav).getByRole("link", { name: "Dashboard" })
+    ).toHaveAttribute("aria-current", "page");
+    expect(within(nav).getByRole("button", { name: "Practice" })).toBeVisible();
+    expect(within(nav).getByRole("button", { name: "Progress" })).toBeVisible();
   });
 
-  it("sends the student to the welcome page when the session has ended", async () => {
-    fakeBackend({
-      "/api/levels": { status: 401, body: { error: "session_expired" } },
-      "/api/auth/refresh": { status: 401, body: { error: "not_logged_in" } },
-      "/api/classrooms/mine": {
-        status: 401,
-        body: { error: "session_expired" }
-      }
-    });
+  it("shows progress toward the daily goal", () => {
     renderHome();
 
-    expect(await screen.findByText("Welcome page")).toBeInTheDocument();
+    expect(screen.getByText("7 / 10 min")).toBeInTheDocument();
+    const meter = screen.getByRole("progressbar", { name: "Daily goal" });
+    expect(meter).toHaveAttribute("aria-valuenow", "7");
+    expect(meter).toHaveAttribute("aria-valuemax", "10");
   });
 
-  it("logs out from the top bar", async () => {
-    fakeBackend({
-      "/api/levels": levelsReply(LEVELS),
-      "/api/classrooms/mine": classroomReply
-    });
-    const onLogout = renderHome();
-    const user = userEvent.setup();
+  it("shows four next-move cards, with locked ones disabled", () => {
+    renderHome();
 
+    const moves = screen.getByRole("region", { name: "Pick your next move" });
+    const cards = within(moves).getAllByRole("button", { name: /min|Locked/ });
+    expect(cards).toHaveLength(4);
+
+    const next = within(moves).getByRole("button", { name: /Beat basics/ });
+    expect(next).toHaveTextContent("Next up");
+    expect(next).toHaveTextContent("Quarter notes & rests");
+    expect(next).toHaveTextContent("8 min");
+    expect(next).toBeEnabled();
+
+    const locked = within(moves).getByRole("button", { name: /Note ninja/ });
+    expect(locked).toHaveTextContent("Locked");
+    expect(locked).toBeDisabled();
+  });
+
+  it("shows the weekly rhythm chart with a label for every day", () => {
+    renderHome();
+
+    const week = screen.getByRole("region", { name: "Weekly rhythm" });
+    expect(week).toHaveTextContent("4 of 5 goals");
+    const days = within(week).getAllByRole("listitem");
+    expect(days).toHaveLength(7);
+    expect(days[0]).toHaveTextContent("Monday: 8 minutes");
+    expect(days[4]).toHaveTextContent("Friday: not played yet");
+  });
+
+  it("lists the latest wins with their rewards", () => {
+    renderHome();
+
+    const wins = screen.getByRole("region", { name: "Latest wins" });
+    const [first, second] = within(wins).getAllByRole("listitem");
+    expect(first).toHaveTextContent("Perfect timing");
+    expect(first).toHaveTextContent("Rhythm Lab · Today");
+    expect(first).toHaveTextContent("+120 XP");
+    expect(second).toHaveTextContent("3 lessons complete");
+    expect(second).toHaveTextContent("Badge");
+  });
+
+  it("logs out from the account menu, which closes on Escape", async () => {
+    const { onLogout, user } = renderHome();
+    const avatar = screen.getByRole("button", {
+      name: "Account menu for Nova Kim"
+    });
+
+    await user.click(avatar);
+    expect(avatar).toHaveAttribute("aria-expanded", "true");
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("button", { name: "Log out" })).toBeNull();
+
+    await user.click(avatar);
     await user.click(screen.getByRole("button", { name: "Log out" }));
+    expect(onLogout).toHaveBeenCalledOnce();
+  });
+
+  it("leaves the account from the footer's Switch role button", async () => {
+    const { onLogout, user } = renderHome();
+
+    await user.click(screen.getByRole("button", { name: "Switch role" }));
 
     expect(onLogout).toHaveBeenCalledOnce();
+  });
+
+  it("renders whatever data it is given, ready for the real API", () => {
+    renderHome({
+      ...PREVIEW_DASHBOARD,
+      streakDays: 1,
+      dailyGoal: { doneMinutes: 0, goalMinutes: 15 },
+      wins: []
+    });
+
+    expect(
+      screen.getByText("Monday · Your 1st day in a row")
+    ).toBeInTheDocument();
+    expect(screen.getByText("0 / 15 min")).toBeInTheDocument();
+    expect(
+      within(
+        screen.getByRole("region", { name: "Latest wins" })
+      ).queryAllByRole("listitem")
+    ).toHaveLength(0);
   });
 });
