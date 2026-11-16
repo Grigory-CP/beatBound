@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { ApiError, apiFetch } from "../api/client";
 import { logout, me } from "../auth/api";
+import StudentHome from "./StudentHome";
 
 type User = {
   id: string;
@@ -16,16 +17,6 @@ type Classroom = {
   is_active: boolean;
 };
 
-type Level = {
-  challenge_id: number;
-  level_number: number;
-  title: string;
-  type: string;
-  unlocked: boolean;
-  completed: boolean;
-  best_score: number;
-};
-
 export default function Home() {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
@@ -34,12 +25,6 @@ export default function Home() {
   const [classroomError, setClassroomError] = useState(false);
   const [newClassroomName, setNewClassroomName] = useState("");
   const [creatingClassroom, setCreatingClassroom] = useState(false);
-  const [levels, setLevels] = useState<Level[]>([]);
-  const [levelsError, setLevelsError] = useState(false);
-  const [character, setCharacter] = useState<{
-    level: number;
-    xp: number;
-  } | null>(null);
 
   const role = user ? String(user.role).toUpperCase() : "";
 
@@ -89,29 +74,8 @@ export default function Home() {
       }
     }
 
-    async function loadStudentData() {
-      try {
-        const response = await apiFetch<{
-          levels: Level[];
-          character: { level: number; xp: number };
-        }>("/api/levels");
-        setLevels(response.levels ?? []);
-        setCharacter(response.character ?? null);
-        setLevelsError(false);
-      } catch (error) {
-        if (error instanceof ApiError && error.status === 401) {
-          navigate("/", { replace: true });
-          return;
-        }
-        setLevelsError(true);
-      }
-    }
-
     if (role === "TEACHER") {
       void loadTeacherData();
-    }
-    if (role === "STUDENT") {
-      void loadStudentData();
     }
   }, [navigate, role, user]);
 
@@ -167,6 +131,13 @@ export default function Home() {
           <p className="data-unavailable">Data Unavailable</p>
         </div>
       </div>
+    );
+  }
+
+  // Students get their own quest-style home page.
+  if (role === "STUDENT") {
+    return (
+      <StudentHome displayName={user.displayName} onLogout={handleLogout} />
     );
   }
 
@@ -229,41 +200,6 @@ export default function Home() {
                     {creatingClassroom ? "Adding…" : "Add classroom"}
                   </button>
                 </form>
-              </div>
-            )}
-          </section>
-        )}
-
-        {role === "STUDENT" && (
-          <section className="dashboard-panel">
-            <h2>Level progress</h2>
-            {levelsError ? (
-              <p className="data-unavailable">Data Unavailable</p>
-            ) : (
-              <div className="dashboard-grid">
-                <div className="level-summary">
-                  <span>Level {character?.level ?? 0}</span>
-                  <span>{character?.xp ?? 0} XP</span>
-                </div>
-                <ul className="level-list">
-                  {levels.map((level) => (
-                    <li key={level.challenge_id} className="level-item">
-                      <div>
-                        <strong>
-                          #{level.level_number} {level.title}
-                        </strong>
-                        <div className="level-meta">
-                          {level.type} ·{" "}
-                          {level.unlocked ? "Unlocked" : "Locked"} ·{" "}
-                          {level.completed ? "Completed" : "Not completed"}
-                        </div>
-                      </div>
-                      <div className="level-meta">
-                        Best score: {level.best_score}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
               </div>
             )}
           </section>
