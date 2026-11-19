@@ -6,6 +6,24 @@ Lead Engineer: Amogh Arora; Scrum Master: Grigory Polunin; Product Owner: Edgar 
 - Backend: `cd packages/backend`, copy `.env.example` to `.env` and fill in `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `SUPABASE_PUBLISHABLE_KEY`, then run `npm install` and `npm run dev` to start on `:4000`.
 - Frontend: `cd packages/frontend`, run `npm install`, then `npm run dev` to start on `:3000`, which proxies `/api` to `:4000`.
 
+## Testing
+
+No database, `.env` file or network needed. From the repo root:
+
+```bash
+npm install   # once
+npm test      # all backend and frontend tests (Vitest)
+```
+
+Use `npm test -w backend` or `npm test -w frontend` for one package.
+
+- **TDD:** pitch grading utilities (`packages/frontend/src/audio/pitch.ts`) built red → green → refactor. The commits and test output are in [TESTING.md › TDD](TESTING.md#tdd-pitch-grading-utilities).
+- **Unit:** auth middleware, error handler, form validation and API error mapping, each tested on its own.
+- **System:** Supertest requests through the real Express app, middleware and services, with only Supabase mocked (teacher creates classrooms, student plays a battle turn).
+- **UI:** React Testing Library + user-event drive the real app through labels and buttons (log in and see protected content, wrong password, logged-out redirect).
+
+Tools, test files and counts, mocks and limitations: see [TESTING.md](TESTING.md).
+
 ## Access control (TE6)
 
 This phase follows the class example for secure app access: passwords are hashed with bcrypt in Supabase Auth (never stored or sent in plain text, never in a URL); sign-in issues a signed JWT access token (short-lived) plus a refresh token; the tokens are sent as `httpOnly`, `SameSite=Lax` cookies (`Secure` in production) instead of local storage, so page JavaScript cannot read them (XSS protection). The backend also accepts `Authorization: Bearer ...`; `requireAuth` verifies the token on every protected request (401), `requireRole` checks the role (403), and Row Level Security in Postgres is a second check (each request uses a user-scoped DB client; the admin key is only used in `src/services/`). Students log in with a username (mapped to an internal email); teachers and parents use email. Sign-up and login are the only unprotected auth routes.
